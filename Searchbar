@@ -1,5 +1,5 @@
 from tkinter import *
-import webbrowser, subprocess, os
+import subprocess
 from colorama import Fore, Style
 
 ink = 0
@@ -19,15 +19,17 @@ def main_search():
 
 def search():
     url = entry.get()
-    webbrowser.open(url)
+    print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL} Openning {url} ")
+    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",url])
     win.quit()
 
 def search_ink():
-    url_ink = entry.get()
-    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "-incognito", url_ink])
+    url = entry.get()
+    print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL} Openning {url}")
+    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "-incognito", url])
 
 
-def search2(useless):
+def search2():
     search()
 
 
@@ -38,7 +40,7 @@ def INK():
     else:
         ink = 1
         nor = 0
-        print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL} Your mode is now Inkognito")
+        print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL} Your mode is now Incognito")
 
 
 
@@ -64,10 +66,10 @@ button = Button(win, text="Search", command=search)
 button.grid(row=1, column=0, columnspan=2, pady=10)
 
 buttonINK = Button(win, text="Inkognito", command=INK)
-buttonINK.grid(row=1, column=0, columnspan=1, pady=5)
+buttonINK.grid(row=1, column=0, columnspan=1, pady=10)
 
 buttonNOR = Button(win, text="Normal", command=NOR)
-buttonNOR.grid(row=1, column=1, columnspan=1, pady=5)
+buttonNOR.grid(row=1, column=1, columnspan=1, pady=20)
 
 win.bind_all('<Return>', search2)
 
