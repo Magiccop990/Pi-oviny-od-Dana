@@ -1,13 +1,20 @@
 from tkinter import *
 import webbrowser, subprocess, os
-
+from colorama import Fore, Style
 
 ink = 0
 nor = 0
 
-
 win = Tk()
 win.title("Search Bar")
+
+
+def main_search():
+
+    if ink == 1:
+        search_ink()
+    elif nor == 1:
+        search()
 
 
 def search():
@@ -15,40 +22,53 @@ def search():
     webbrowser.open(url)
     win.quit()
 
+def search_ink():
+    url_ink = entry.get()
+    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "-incognito", url_ink])
+
+
 def search2(useless):
     search()
-    
+
+
 def INK():
     global ink, nor
-    ink = 1
-    nor = 0
-    print("Your mod is now Inkognito")
+    if ink == 1:
+        pass
+    else:
+        ink = 1
+        nor = 0
+        print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL} Your mode is now Inkognito")
+
+
 
 def NOR():
     global ink, nor
-    ink = 0
-    nor = 1
-    print("Your mod is now Normal")
+    if nor == 1:
+        pass
+    else:
+        ink = 0
+        nor = 1
+        print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL} Your mode is now Normal")
+
+
 
 
 label1 = Label(win, text="Enter URL Here:", font=("arial", 10, "bold"))
 label1.grid(row=0, column=0)
 
-
 entry = Entry(win, width=30)
 entry.grid(row=0, column=1)
-
 
 button = Button(win, text="Search", command=search)
 button.grid(row=1, column=0, columnspan=2, pady=10)
 
 buttonINK = Button(win, text="Inkognito", command=INK)
-buttonINK.grid(row=1, column= 0, columnspan=1, pady=5)
+buttonINK.grid(row=1, column=0, columnspan=1, pady=5)
 
 buttonNOR = Button(win, text="Normal", command=NOR)
 buttonNOR.grid(row=1, column=1, columnspan=1, pady=5)
 
-
-win.bind_all('<Return>',search2)
+win.bind_all('<Return>', search2)
 
 win.mainloop()
