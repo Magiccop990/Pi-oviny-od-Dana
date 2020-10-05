@@ -9,18 +9,10 @@ win = Tk()
 win.title("Search Bar")
 
 
-def main_search():
-
-    if ink == 1:
-        search_ink()
-    elif nor == 1:
-        search()
-
-
-def search():
+def search_nor():
     url = entry.get()
     print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL} Openning {url} ")
-    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",url])
+    subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", url])
     win.quit()
 
 def search_ink():
@@ -29,8 +21,12 @@ def search_ink():
     subprocess.Popen(["C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "-incognito", url])
 
 
-def search2():
-    search()
+def search():
+    global ink, nor
+    if ink==1:
+        search_ink()
+    elif nor == 1:
+        search_nor()
 
 
 def INK():
@@ -71,6 +67,6 @@ buttonINK.grid(row=1, column=0, columnspan=1, pady=10)
 buttonNOR = Button(win, text="Normal", command=NOR)
 buttonNOR.grid(row=1, column=1, columnspan=1, pady=20)
 
-win.bind_all('<Return>', search2)
+win.bind_all('<Return>', search)
 
 win.mainloop()
