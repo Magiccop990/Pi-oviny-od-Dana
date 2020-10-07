@@ -1,0 +1,12 @@
+import random
+
+dct_name = {}
+sfile = open("sfile.txt", "r")
+sfile_name_number = int(sfile.readline())
+for i in range(sfile_name_number):
+    name_get = sfile.readline().split("\n")
+    name = name_get[0]
+    number = random.randint(1, 10000)
+    dct_name.update({name:number})
+sfile.close()
+print(dct_name)
