@@ -68,4 +68,3 @@ def RemPerson():
 
 
 Roll()
-    dct_name.pop(name)
