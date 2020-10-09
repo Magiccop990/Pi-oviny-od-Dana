@@ -1,4 +1,4 @@
-import random
+import random, sys
 
 
 #people:number
@@ -53,16 +53,13 @@ def Roll():
 #bottom definitions(add people, remove people)
 
 def AddPeople():
-    prs = input("Write the name of person you want to add: ")
-    dct_name.update({prs:random.randint(1,10000)})
-    dct_index.update({dct_name[prs]: prs})
-    print("Sucesfully added " + prs + " to catalogue")
-    if int(dct_name[name]) > wwchd:
-        wwchd = int(dct_name[name])
-    elif int(dct_name[name]) <= wwchd:
-        pass
+    name = entry1.get()
+    num = random.randint(1, 10000)
+    dct_name.update({name:num})
 
+def Exit():
+    sys.Exit(0)
 
-#called main
-
-Roll()
+def RemPerson():
+    name = entry1.get()
+    dct_name.pop(name)
