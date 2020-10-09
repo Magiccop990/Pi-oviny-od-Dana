@@ -1,5 +1,6 @@
 import random, sys
 
+textOut=str("")
 
 #people:number
 
@@ -47,11 +48,11 @@ def Roll():
             pass
     str(wwchd)
     winner = dct_index.get(wwchd)
-    print("Dnes pôjde na odpoveď " + winner + "!\nTaká škoda...")
+    textOut = "Dnes pôjde odpovedať " + winner + ", veľa štastia!"
 
 
 #bottom definitions(add people, remove people)
-
+"""
 def AddPeople():
     name = entry1.get()
     num = random.randint(1, 10000)
@@ -62,4 +63,9 @@ def Exit():
 
 def RemPerson():
     name = entry1.get()
+    dct_name.pop(name)
+"""
+
+
+Roll()
     dct_name.pop(name)
