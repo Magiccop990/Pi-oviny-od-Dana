@@ -115,10 +115,16 @@ class main():
         #cash
         filename = self.filename
         self.file_o = open(filename+".txt", "r")
-        cash = int(self.file_o.readline())
-        self.file_o.close()
-        self.cash = cash
-        print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}Current cash: {str(cash)} €")
+        try:
+            cash = int(self.file_o.readline())
+        except:
+            fileA = open("clicker_cash.txt", "w")
+            fileA.write("0")
+            fileA.close()
+        else:
+            self.file_o.close()
+            self.cash = cash
+            print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}Current cash: {str(cash)} €")
         #shop
         filename2 = self.filename2
         self.file_s = open(filename2 + ".txt", "r")
@@ -252,4 +258,3 @@ if __name__ == 'main':
 
 #listener join
 Keys.Listener_join()
-#just to get it to 240
