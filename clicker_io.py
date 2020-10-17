@@ -1,3 +1,5 @@
+#imports
+from colorama import Fore, Style
 from tkinter import *
 from pynput.keyboard import Listener
 import time, multiprocessing
@@ -11,13 +13,15 @@ upgrades = {upgrade_list[0]:1, upgrade_list[1]:2, upgrade_list[2]:5}
 upgrades_cost = {upgrade_list[0]:500, upgrade_list[1]:1500, upgrade_list[2]:5000}
 income = upgrades[upgrade_list[Level]]
 
+
 #variables
 cash = 0
 num = 0
 key = str("")
 
-#info
-print("press SPACE to earn\npress ESC to exit\npress TAB to upgrade")
+
+#info for user
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press SPACE to earn\n{Fore.CYAN} [INFO] {Style.RESET_ALL}press ESC to exit\n{Fore.CYAN} [INFO] {Style.RESET_ALL}press TAB to upgrade")
 
 
 #main class
@@ -50,9 +54,9 @@ class main():
         cash = int(self.file_o.readline())
         self.file_o.close()
         self.cash = cash
-        print(f"Current cash: {str(cash)} €")
+        print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Current cash: {str(cash)} €")
         
-        #UPGRADES
+        #####UPGRADES
 
     def PU(self):
         upgrades_cost = self.upgrades_cost
@@ -62,20 +66,25 @@ class main():
         try:
             randvar = upgrades[upgrade_list[Level + 1]]
         except:
-            print("Wait... You already have all upgrades.")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Wait... You already have all upgrades.")
         else:
             if cash >= upgrades_cost[upgrade_list[Level]]:
-                print(f"This transaction cost you: {str(upgrades_cost[upgrade_list[Level]])} €")
+                print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Outgoing transaction...")
+                time.sleep(1)
+                print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}This transaction cost you: {str(upgrades_cost[upgrade_list[Level]])} €")
+                time.sleep(0.5)
                 cash -= upgrades_cost[upgrade_list[Level]]
-                print(f"You now have {cash} €")
                 Level += 1
                 income = upgrades[upgrade_list[Level]]
-                print(f"Your income is now: {income} €")
+                print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Setting your income to: {income} €...")
+                time.sleep(0.5)
+                print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}You now have {cash} €")
+                time.sleep(0.5)
                 self.Level = Level
                 self.cash = cash
                 self.income = income
             else:
-                print(f"You dont have enought money to buy this. Cost({str(upgrades_cost[upgrade_list[Level]])} €)")
+                print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}You dont have enought money to buy this. Cost({str(upgrades_cost[upgrade_list[Level]])} €)")
 
     def Get_cash(self):
         main.File_read(self=self)
@@ -86,28 +95,29 @@ class main():
         cash = self.cash
         self.key = key
         income = self.income
+        upgrades_cost = self.upgrades_cost
 
         if key == key.space:
             cash += income
             self.cash = cash
-            print(f"Your cash: {cash} €")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Your cash: {cash} €")
             time.sleep(0.1)
 
         elif key == key.esc:
             main.File_write(self=self)
-            print(f"You now have: {cash} €")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}You now have: {cash} €")
             exit()
 
         elif key == key.alt_l:
-            print(f"Upgrade names:money {upgrade_list}")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Upgrade names:money {upgrade_list}, upgrade cost names:cost {upgrades_cost}")
 
         elif key == key.tab:
-            print("Searching for better business...")
+            print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Searching for better business...")
             time.sleep(1)
             main.PU(self)
 
         else:
-            print(f"Sorry, this key ({key}) doesnt do anything")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Sorry, this key ({key}) doesnt do anything")
 
     def search_by_val(self, val):
         for shop in self.upgrade_list:
@@ -129,13 +139,17 @@ class main():
             listener.join()
 
 
+#main in variable
 Keys = main(filename="clicker_io", cash=cash, key=key, useless=None)
 
+
+#just for fun
 def Main(bookshelf):
     print(bookshelf)
 
-
 if __name__ == 'main':
-    Main("This is BOOKSHELF")
+    Main(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}This is BOOKSHELF")
 
+
+#listener join
 Keys.Listener_join()
