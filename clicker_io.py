@@ -1,107 +1,108 @@
 from tkinter import *
 from pynput.keyboard import Listener
-import time
+import time, multiprocessing
 import tkinter as tk
 
 
-print("press SPACE to earn")
-cash = 0
+#upgrade variables
 Level = 0
-upgrade_list = ["McDonalds"]
-upgrades = {upgrade_list[Level]:1}
+upgrade_list = ["McDonalds", "KFC", "Subway"]
+upgrades = {upgrade_list[0]:1, upgrade_list[1]:2, upgrade_list[2]:5}
 income = upgrades[upgrade_list[Level]]
 
+#variables
+cash = 0
+num = 0
+key = str("")
+
+#info
+print("press SPACE to earn\npress ESC to exit\npress CTRL to upgrade")
 
 
-
-
-class File(file):
-    
-    def filename_get(self, filename):
+#main class
+class main():
+    def __init__(self, filename, cash, useless, key):
+        global income, upgrade_list, upgrades, Level
+        self.upgrade_list = upgrade_list
+        self.upgrades = upgrades
+        self.Level = Level
+        self.income = income
         self.filename = filename
+        self.cash = cash
+        self.key = key
+        main.Get_cash(self)
+
+    #####FILE
         
     def File_write(self):
-        money = self.money
+        cash = self.cash
         filename = self.filename
-        file_write = open(filename+".txt", "w")
-        file_write.write(str(money))
-        file_write.close
-        
+        self.file_write = open(filename+".txt", "w")
+        self.file_write.write(str(cash))
+        self.file_write.close
+
     def File_read(self):
-        global cash
+        cash = self.cash
         filename = self.filename
-        file_read = open(filename+".txt", "r")
-        cash = int(file_read.readline())
+        self.file_o = open(filename+".txt", "r")
+        cash = int(self.file_o.readline())
+        self.file_o.close()
+        self.cash = cash
         print("Current cash: " + str(cash))
-        file_read.close()
-
-class Window(ui):
-    def __init__(self):
-        cash = self.money
-        win = Tk()
-        win.title("CLICKER.IO")
-        win.geometry("200x100")
-        main_label = Label(win, text=cash, width=5)
-        main_label.place(x=90,y=10)
-        main_frame = LabelFrame(win, width=5, height=2)
-        main_frame.place(x=90, y=10)
         
-    def main_update(self):
-        cash = self.money
-        main_label.configurate(text=cash)
+        #window
+
+    def Windower(self):
+        cash = self.cash
+        upgrade_list = self.upgrade_list
+        upgrades = self.upgrades
+        Level = self.Level
+        #return 
 
 
-class Keys_get(listener_commands):
-    
-    def Get_cash(self, useless):
-        File.filename_get(self=self, filename="clicker_io")
-        File.File_read(self=self)
-        
-    def press(self, key, money):
-        global cash
-        self.money = money
+    def Get_cash(self):
+        main.File_read(self=self)
+
+    #####KEYS AND THEIR DEFINITIONS
+
+    def press(self, key):
+        cash = self.cash
         self.key = key
-        #print(f"Pressed: {key}")
-        
+        income = self.income
+
         if key == key.space:
-            print("cash +1")
             cash += income
-            Window.main_update(self)
-            #print(cash)
-            
+            self.cash = cash
+            print(f"Your cash: {cash} €")
+            time.sleep(0.1)
+
         elif key == key.esc:
-            File.File_write(self=self)
-            print(f"You now have {cash} €")
+            main.File_write(self=self)
+            print(f"You now have: {cash} €")
             exit()
-            
+
+        elif key == key.ctrl_l:
+            main.Windower(self)
+
     def release(self, key):
-        pass
-    
+        income = self.income
+
     def on_press(self, key):
-        global cash
-        Keys_get.press(self=self, key=key, money=cash)
-        
+        cash = self.cash
+        main.press(self=self, key=key)
+
     def on_release(self, key):
-        Keys_get.release(self=self, key=key)
+        main.release(self=self, key=key)
 
     def Listener_join(self):
         with Listener(on_press=Keys.on_press, on_release=Keys.on_release) as listener:
             listener.join()
 
 
+Keys = main(filename="clicker_io", cash=cash, key=key, useless=None)
 
+"""
+if __name__ == 'main':
+    Main()"""
 
-
-Keys = Keys_get(listener_commands=None)
-Keys.Get_cash(useless=None)
-Win = Window(ui=None)
-
-
-
-def Main():
-    pass
-
-If __name__ == 'main':
-    Main()
-
-Keys.Listener_join() 
+Keys.Listener_join()
