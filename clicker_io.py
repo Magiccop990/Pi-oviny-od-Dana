@@ -10,6 +10,7 @@ import tkinter as tk
 #upgrade variables
 Level = 0
 upgrade_list = [
+    "Base",
     "McDonalds",
     "KFC",
     "Subway",
@@ -17,18 +18,19 @@ upgrade_list = [
     "Datart",
     "Alza",
     "Panta Rey",
-    "Brloh"
+    "Brloh",
     ]
 
 Level_list = {
-    upgrade_list[0]:1,
-    upgrade_list[1]:2, 
-    upgrade_list[2]:3, 
-    upgrade_list[3]:4, 
-    upgrade_list[4]:5, 
-    upgrade_list[5]:6, 
-    upgrade_list[6]:7, 
-    upgrade_list[7]:8
+    upgrade_list[0]:0,
+    upgrade_list[1]:1, 
+    upgrade_list[2]:2, 
+    upgrade_list[3]:3, 
+    upgrade_list[4]:4, 
+    upgrade_list[5]:5, 
+    upgrade_list[6]:6, 
+    upgrade_list[7]:7,
+    upgrade_list[8]:8
     }
 
 upgrades = {
@@ -39,7 +41,8 @@ upgrades = {
     upgrade_list[4]:100, 
     upgrade_list[5]:500, 
     upgrade_list[6]:1500, 
-    upgrade_list[7]:5000
+    upgrade_list[7]:5000,
+    upgrade_list[8]:50000
     }
 
 upgrades_cost = {
@@ -50,7 +53,8 @@ upgrades_cost = {
     upgrade_list[4]:50000, 
     upgrade_list[5]:500000, 
     upgrade_list[6]:1000000, 
-    upgrade_list[7]:1000000000
+    upgrade_list[7]:100000000,
+    upgrade_list[8]:1000000000
     }
 
 income = upgrades[upgrade_list[Level]]
@@ -64,7 +68,11 @@ number = 0
 
 
 #info for user
-print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press SPACE to earn\n{Fore.CYAN} [INFO] {Style.RESET_ALL}press ESC to exit\n{Fore.CYAN} [INFO] {Style.RESET_ALL}press TAB to upgrade\n{Fore.CYAN} [INFO] {Style.RESET_ALL}press CTRL to reset")
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press SPACE to earn")
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press ESC to exit")
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press TAB to upgrade")
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press CTRL to reset")
+print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}press ALT to see shops, incomes and costs")
 
 
 #main class
@@ -114,33 +122,41 @@ class main():
         Level_list = self.Level_list
         #cash
         filename = self.filename
-        self.file_o = open(filename+".txt", "r")
         try:
-            cash = int(self.file_o.readline())
+            self.file_o = open(filename+".txt", "r")
         except:
             fileA = open("clicker_cash.txt", "w")
             fileA.write("0")
             fileA.close()
+            main.File_read(self)
         else:
+            cash = int(self.file_o.readline())
             self.file_o.close()
             self.cash = cash
             print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}Current cash: {str(cash)} €")
         #shop
         filename2 = self.filename2
-        self.file_s = open(filename2 + ".txt", "r")
-        shop = str(self.file_s.readline())
-        if shop != "":
-            self.file_s.close()
-            self.shop = shop
-            print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}You own: {str(shop)}")
-            Level = Level_list[shop]
-            income = upgrades[upgrade_list[Level]]
-            self.income = income
-            print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}Your income is: {income} €")
-            self.Level = Level
-            self.shop = shop
+        try:
+            self.file_s = open(filename2 + ".txt", "r")
+        except:
+            fileB = open(filename2 + ".txt", "w")
+            fileB.write("Base")
+            fileB.close()
+            main.File_read(self)
         else:
-            pass
+            shop = str(self.file_s.readline())
+            if shop != "":
+                self.file_s.close()
+                self.shop = shop
+                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}You own: {str(shop)}")
+                Level = Level_list[shop]
+                income = upgrades[upgrade_list[Level]]
+                self.income = income
+                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}Your income is: {income} €")
+                self.Level = Level
+                self.shop = shop
+            else:
+                pass
 
         
         #####UPGRADES
@@ -158,15 +174,15 @@ class main():
             if cash >= upgrades_cost[upgrade_list[Level]]:
                 print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Outgoing transaction...")
                 time.sleep(1)
-                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}This transaction cost you: {str(upgrades_cost[upgrade_list[Level]])} €")
-                time.sleep(0.5)
-                shop = main.search_by_val(self, upgrades_cost[upgrade_list[Level]])
-                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}You now own {shop}")
-                time.sleep(0.5)
-                cash -= upgrades_cost[upgrade_list[Level]]
                 Level += 1
+                shop = main.search_by_val(self, upgrades_cost[upgrade_list[Level]])
+                cash -= upgrades_cost[upgrade_list[Level - 1]]
                 income = upgrades[upgrade_list[Level]]
                 print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Setting your income to: {income} €...")
+                time.sleep(1)
+                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}This transaction cost you: {str(upgrades_cost[upgrade_list[Level - 1]])} €")
+                time.sleep(1)
+                print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}You now own {shop}")
                 time.sleep(0.5)
                 print(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}You now have {cash} €")
                 time.sleep(0.5)
@@ -186,6 +202,7 @@ class main():
         cash = self.cash
         self.key = key
         upgrades_cost = self.upgrades_cost
+        upgrades = self.upgrades
 
         if key == key.space:
             cash += self.income
@@ -199,7 +216,7 @@ class main():
             exit()
 
         elif key == key.alt_l:
-            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Upgrade names:money {upgrade_list}, upgrade cost names:cost {upgrades_cost}")
+            print(f"{Fore.CYAN} [INFO] {Style.RESET_ALL}Upgrade names:money {upgrades}, upgrade cost names:cost {upgrades_cost}")
 
         elif key == key.tab:
             print(f"{Fore.GREEN} [TASK] {Style.RESET_ALL}Searching for better business...")
@@ -221,7 +238,7 @@ class main():
         filename = self.filename
         filename2 = self.filename2
         file1 = open(filename2 + ".txt", "w")
-        file1.write("")
+        file1.write("Base")
         file1.close()
         file2 = open(filename + ".txt", "w")
         file2.write("0")
@@ -253,7 +270,7 @@ def Main(bookshelf):
     print(bookshelf)
 
 if __name__ == 'main':
-    Main(f"{Fore.RED} [CASHIER] {Style.RESET_ALL}This is BOOKSHELF")
+    Main(f"{Fore.BLUE} [MOM] {Style.RESET_ALL}This is BOOKSHELF")
 
 
 #listener join
