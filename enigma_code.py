@@ -127,6 +127,7 @@ class Decodex():
         self.codex_read.close()
 
     def Main(self):
+        panel.GetLet()
         self.command = str(input(">> "))
         if self.command[0] == "/":
             if self.code in self.command:
