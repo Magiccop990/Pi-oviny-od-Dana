@@ -1,4 +1,4 @@
-import time, random
+import time, random, os
 
 numbers = [1, 0]
 number = str("")
@@ -16,6 +16,21 @@ class Decodex():
         self.let_index = 0
         self.num_list = num_list
         self.safe_decode = False
+        #commands
+        self.code = "/code"
+        self.decode = "/decode"
+        self.newcodex = "/newcodex"
+        self.print = "/print"
+        self.getkey = "/getkey"
+        self.getvalue = "/getvalue"
+        self.help = "/help"
+        self.exit = "/exit"
+        self.getcodex = "/getcodex"
+        self.savecodex = "/savecodex"
+        self.command_list = [self.code, self.decode, self.newcodex, self.print, self.getkey, self.getvalue, self.help, self.exit, self.getcodex, self.savecodex]
+        self.text_output = str(self.command_list).replace(",", "")
+        self.text_output = self.text_output.replace("[", "")
+        self.text_output = self.text_output.replace("]", "")
 
     def RandomNum(self):
         self.rand_num = random.choice(self.numbers)
@@ -110,24 +125,24 @@ class Decodex():
     def Main(self):
         self.command = str(input(">> "))
         if self.command[0] == "/":
-            if "/code" in self.command:
-                if self.command == "/code":
+            if self.code in self.command:
+                if self.command == self.code:
                     self.text = str(input("Please enter message: "))
                     self.result = self.text
                     panel.Code()
                     panel.Main()
-                elif "/code" in self.command:
-                    self.text = self.command.replace("/code ", "")
+                elif self.code in self.command:
+                    self.text = self.command.replace(self.code + " ", "")
                     self.result = self.text
                     panel.Code()
                     panel.Main()
 
-            elif "/decode" in self.command:
-                if self.command == "/decode":
+            elif self.decode in self.command:
+                if self.command == self.decode:
                     panel.Decode()
                     panel.Main()
-                elif "/decode" in self.command:
-                    self.result = self.command.replace("/decode", "")
+                elif self.decode in self.command:
+                    self.result = self.command.replace(self.decode, "")
                     for letter in self.let:
                         if letter in self.result:
                             print("Please enter only 1 and 0.")
@@ -136,13 +151,13 @@ class Decodex():
                     panel.Decode()
                     panel.Main()
 
-            elif "/newcodex" in self.command:
+            elif self.newcodex in self.command:
                 panel.NewCodex()
                 panel.Main()
 
-            elif "/print" in self.command:
+            elif self.print in self.command:
                 self.object = str("")
-                self.object = self.command.replace("/print ", "")
+                self.object = self.command.replace(self.print + " ", "")
                 if self.object == "codex":
                     print(self.codex)
                     panel.Main()
@@ -150,14 +165,17 @@ class Decodex():
                     panel.GetLet()
                     print(self.let)
                     panel.Main()
+                elif self.object == "keywords":
+                    print("Avable keywords: codex, letters")
+                    panel.Main()
                 else:
-                    print("You need to enter a keyword.")
+                    print("You need to enter a keyword. To get keywords please type: /print keywords")
                     self.object = str("")
                     panel.Main()
 
-            elif "/getkey" in self.command:
+            elif self.getkey in self.command:
                 self.object = str("")
-                if self.command == "/getkey":
+                if self.command == self.getkey:
                     try:
                         self.object = str(input("Enter a number: "))
                     except:
@@ -165,15 +183,15 @@ class Decodex():
                     else:
                         print("Letter: " + panel.search_by_val(self.object))
                         panel.Main()
-                elif "/getkey" in self.command:
-                    self.object = str(self.command.replace("/getkey ", ""))
+                elif self.getkey in self.command:
+                    self.object = str(self.command.replace(self.getkey + " ", ""))
                     print("Letter: " + panel.search_by_val(self.object))
                     self.object = str("")
                     panel.Main()
 
-            elif "/getvalue" in self.command:
+            elif self.getvalue in self.command:
                 self.object = str("")
-                if "/getvalue" == self.command:
+                if self.getvalue == self.command:
                     self.object = str(input("Please enter 1 letter: "))
                     try:
                         print("Letter: " + self.codex[self.object])
@@ -181,8 +199,8 @@ class Decodex():
                         print("You can enter only one letter.")
                     else:
                         panel.Main()
-                if "/getvalue" in self.command:
-                    self.object = self.command.replace("/getvalue ", "")
+                if self.getvalue in self.command:
+                    self.object = self.command.replace(self.getvalue + " ", "")
                     try:
                         print("Letter: " + self.codex[self.object])
                     except:
@@ -191,18 +209,18 @@ class Decodex():
                         self.object = str("")
                         panel.Main()
 
-            elif self.command == "/help":
-                print("Avaible commands: /code /decode /newcodex /print /getkey /getvalue /help /exit /savecodex /getcodex")
+            elif self.command == self.help:
+                print("Avaible commands: " + self.text_output)
                 panel.Main()
 
-            elif "/exit" in self.command:
+            elif self.exit in self.command:
                 exit()
 
-            elif "/getcodex" in self.command:
+            elif self.getcodex in self.command:
                 panel.ReadCodex()
                 panel.Main()
 
-            elif "/savecodex" in self.command:
+            elif self.savecodex in self.command:
                 panel.SaveCodex()
                 panel.Main()
 
