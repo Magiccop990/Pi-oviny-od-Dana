@@ -15,6 +15,7 @@ class Decodex():
         self.key = 0
         self.let_index = 0
         self.num_list = num_list
+        self.safe_decode = False
 
     def RandomNum(self):
         self.rand_num = random.choice(self.numbers)
@@ -42,6 +43,7 @@ class Decodex():
         print("Codex succssesfuly created...")
 
     def Code(self):
+        self.safe_decode = True
         self.text = str(input("Please enter message: "))
         self.result = self.text
         self.let_index = 0
@@ -54,14 +56,18 @@ class Decodex():
         print("Result: " + self.result)
 
     def Decode(self):
-        self.let_index = 0
-        self.text = self.result
-        for i in range(len(self.let)):
-            self.number = self.codex[self.let[self.let_index]]
-            self.key = control.search_by_val(self.number)
-            self.text = self.text.replace(" " + self.number, self.key)
-            self.let_index += 1
-        print(self.text)
+        if self.safe_decode == True:
+            self.let_index = 0
+            self.text = self.result
+            for i in range(len(self.let)):
+                self.number = self.codex[self.let[self.let_index]]
+                self.key = control.search_by_val(self.number)
+                self.text = self.text.replace(" " + self.number, self.key)
+                self.let_index += 1
+            print("Message: " + self.text)
+        else:
+            print("You need to code a message first.")
+            control.Main()
 
     def search_by_val(self, val):
         for keys in self.codex:
@@ -103,13 +109,12 @@ class Decodex():
 
         elif self.command == "/searchbyval":
             try:
-                self.useless = int(input("Enter a number: "))
+                self.value_for_search = str(input("Enter a number: "))
             except:
                 raise TypeError
                 print("Please enter a valid number")
             else:
-                self.useless = control.search_by_val(self.useless)
-                print(self.useless)
+                print("Letter: " + control.search_by_val(self.value_for_search))
                 control.Main()
 
         else:
