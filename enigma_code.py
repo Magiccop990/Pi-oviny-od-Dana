@@ -16,6 +16,7 @@ class Decodex():
         self.let_index = 0
         self.num_list = num_list
         self.safe_decode = False
+        self.safe_codex = False
         #commands
         self.code = "/code"
         self.decode = "/decode"
@@ -44,6 +45,7 @@ class Decodex():
                 panel.Number()
 
     def NewCodex(self):
+        self.safe_codex = True
         panel.GetLet()
         self.number = str("")
         self.let_index = 0
@@ -111,6 +113,8 @@ class Decodex():
         print("Codex save succssesful...")
 
     def ReadCodex(self):
+        panel.GetLet()
+        self.safe_codex = True
         self.object = []
         self.codex = {}
         self.codex_read = open("codex.txt", "r")
@@ -126,29 +130,37 @@ class Decodex():
         self.command = str(input(">> "))
         if self.command[0] == "/":
             if self.code in self.command:
-                if self.command == self.code:
-                    self.text = str(input("Please enter message: "))
-                    self.result = self.text
-                    panel.Code()
-                    panel.Main()
-                elif self.code in self.command:
-                    self.text = self.command.replace(self.code + " ", "")
-                    self.result = self.text
-                    panel.Code()
+                if self.safe_codex == True:
+                    if self.command == self.code:
+                        self.text = str(input("Please enter message: "))
+                        self.result = self.text
+                        panel.Code()
+                        panel.Main()
+                    elif self.code in self.command:
+                        self.text = self.command.replace(self.code + " ", "")
+                        self.result = self.text
+                        panel.Code()
+                        panel.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
                     panel.Main()
 
             elif self.decode in self.command:
-                if self.command == self.decode:
-                    panel.Decode()
-                    panel.Main()
-                elif self.decode in self.command:
-                    self.result = self.command.replace(self.decode, "")
-                    for letter in self.let:
-                        if letter in self.result:
-                            print("Please enter only 1 and 0.")
-                            panel.Main()
-                    self.safe_decode = True
-                    panel.Decode()
+                if self.safe_codex == True:
+                    if self.command == self.decode:
+                        panel.Decode()
+                        panel.Main()
+                    elif self.decode in self.command:
+                        self.result = self.command.replace(self.decode, "")
+                        for letter in self.let:
+                            if letter in self.result:
+                                print("Please enter only 1 and 0.")
+                                panel.Main()
+                        self.safe_decode = True
+                        panel.Decode()
+                        panel.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
                     panel.Main()
 
             elif self.newcodex in self.command:
@@ -159,8 +171,12 @@ class Decodex():
                 self.object = str("")
                 self.object = self.command.replace(self.print + " ", "")
                 if self.object == "codex":
-                    print(self.codex)
-                    panel.Main()
+                    if self.safe_codex == True:
+                        print(self.codex)
+                        panel.Main()
+                    else:
+                        print("Codex has not been definied. Please definy the codex")
+                        panel.Main()
                 elif self.object == "letters":
                     panel.GetLet()
                     print(self.let)
@@ -174,40 +190,48 @@ class Decodex():
                     panel.Main()
 
             elif self.getkey in self.command:
-                self.object = str("")
-                if self.command == self.getkey:
-                    try:
-                        self.object = str(input("Enter a number: "))
-                    except:
-                        print("Please enter a valid number")
-                    else:
-                        print("Letter: " + panel.search_by_val(self.object))
-                        panel.Main()
-                elif self.getkey in self.command:
-                    self.object = str(self.command.replace(self.getkey + " ", ""))
-                    print("Letter: " + panel.search_by_val(self.object))
+                if self.safe_codex == True:
                     self.object = str("")
+                    if self.command == self.getkey:
+                        try:
+                            self.object = str(input("Enter a number: "))
+                        except:
+                            print("Please enter a valid number")
+                        else:
+                            print("Letter: " + panel.search_by_val(self.object))
+                            panel.Main()
+                    elif self.getkey in self.command:
+                        self.object = str(self.command.replace(self.getkey + " ", ""))
+                        print("Letter: " + panel.search_by_val(self.object))
+                        self.object = str("")
+                        panel.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
                     panel.Main()
 
             elif self.getvalue in self.command:
-                self.object = str("")
-                if self.getvalue == self.command:
-                    self.object = str(input("Please enter 1 letter: "))
-                    try:
-                        print("Letter: " + self.codex[self.object])
-                    except:
-                        print("You can enter only one letter.")
-                    else:
-                        panel.Main()
-                if self.getvalue in self.command:
-                    self.object = self.command.replace(self.getvalue + " ", "")
-                    try:
-                        print("Letter: " + self.codex[self.object])
-                    except:
-                        print("You can enter only one letter.")
-                    else:
-                        self.object = str("")
-                        panel.Main()
+                if self.safe_codex == True:
+                    self.object = str("")
+                    if self.getvalue == self.command:
+                        self.object = str(input("Please enter 1 letter: "))
+                        try:
+                            print("Letter: " + self.codex[self.object])
+                        except:
+                            print("You can enter only one letter.")
+                        else:
+                            panel.Main()
+                    if self.getvalue in self.command:
+                        self.object = self.command.replace(self.getvalue + " ", "")
+                        try:
+                            print("Letter: " + self.codex[self.object])
+                        except:
+                            print("You can enter only one letter.")
+                        else:
+                            self.object = str("")
+                            panel.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
+                    panel.Main()
 
             elif self.command == self.help:
                 print("Avaible commands: " + self.text_output)
@@ -233,7 +257,6 @@ class Decodex():
             panel.Main()
 
 panel = Decodex()
-panel.NewCodex()
 
 if __name__ == "__main__":
     panel.Main()
