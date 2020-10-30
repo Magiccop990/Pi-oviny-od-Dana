@@ -28,7 +28,7 @@ class Decodex():
                 self.number = str("")
                 panel.Number()
 
-    def GetCodex(self):
+    def NewCodex(self):
         panel.GetLet()
         self.number = str("")
         self.let_index = 0
@@ -73,11 +73,42 @@ class Decodex():
                 return keys
 
     def GetLet(self):
-        self.letters = open("letter.txt", "r")
-        self.letter = self.letters.read()
-        self.alphabet = self.letter.split("\n")
-        self.let = self.alphabet
-        self.letters.close()
+        try:
+            self.letters_file = open("letter.txt", "r")
+        except:
+            self.letters_file_create = open("letter.txt", "w")
+            self.letters_file_create.write("")
+            print("File has been created, but you need to download the file from https://github.com/Streamer272/Pi-oviny-od-Dana/blob/master/letter.txt")
+            self.letters_file_create.close()
+            exit()
+        else:
+            self.letter = self.letters_file.read()
+            self.alphabet = self.letter.split("\n")
+            self.let = self.alphabet
+            self.letters_file.close()
+
+    def SaveCodex(self):
+        self.codex_file = open("codex.txt", "w")
+        self.let_index = 0
+        for i in range(len(self.let)):
+            self.number = self.codex[self.let[self.let_index]]
+            self.key = panel.search_by_val(self.number)
+            self.codex_file.write(self.key + ";" + self.number + "\n")
+            self.let_index += 1
+        self.codex_file.close()
+        print("Codex save succssesful...")
+
+    def ReadCodex(self):
+        self.object = []
+        self.codex = {}
+        self.codex_read = open("codex.txt", "r")
+        for i in range(len(self.let)):
+            self.object = self.codex_read.readline().replace("\n", "")
+            self.object = self.object.split(";")
+            self.codex[str(self.object[0])] = str(self.object[1])
+            self.object = str("")
+        print("Codex read succssesful...")
+        self.codex_read.close()
 
     def Main(self):
         self.command = str(input(">> "))
@@ -109,10 +140,11 @@ class Decodex():
                     panel.Main()
 
             elif "/newcodex" in self.command:
-                panel.GetCodex()
+                panel.NewCodex()
                 panel.Main()
 
             elif "/print" in self.command:
+                self.object = str("")
                 self.object = self.command.replace("/print ", "")
                 if self.object == "codex":
                     print(self.codex)
@@ -123,9 +155,11 @@ class Decodex():
                     panel.Main()
                 else:
                     print("You need to enter a keyword.")
+                    self.object = str("")
                     panel.Main()
 
             elif "/getkey" in self.command:
+                self.object = str("")
                 if self.command == "/getkey":
                     try:
                         self.object = str(input("Enter a number: "))
@@ -137,9 +171,11 @@ class Decodex():
                 elif "/getkey" in self.command:
                     self.object = str(self.command.replace("/getkey ", ""))
                     print("Letter: " + panel.search_by_val(self.object))
+                    self.object = str("")
                     panel.Main()
 
             elif "/getvalue" in self.command:
+                self.object = str("")
                 if "/getvalue" == self.command:
                     self.object = str(input("Please enter 1 letter: "))
                     try:
@@ -155,14 +191,23 @@ class Decodex():
                     except:
                         print("You can enter only one letter.")
                     else:
+                        self.object = str("")
                         panel.Main()
 
             elif self.command == "/help":
-                print("Avaible commands: /code /decode /newcodex /print /getkey /getvalue /help /exit")
+                print("Avaible commands: /code /decode /newcodex /print /getkey /getvalue /help /exit /savecodex /getcodex")
                 panel.Main()
 
             elif "/exit" in self.command:
                 exit()
+
+            elif "/getcodex" in self.command:
+                panel.ReadCodex()
+                panel.Main()
+
+            elif "/savecodex" in self.command:
+                panel.SaveCodex()
+                panel.Main()
 
             else:
                 print("There is no command named " + self.command)
@@ -173,7 +218,7 @@ class Decodex():
             panel.Main()
 
 panel = Decodex()
-panel.GetCodex()
+panel.NewCodex()
 
 if __name__ == "__main__":
     panel.Main()
