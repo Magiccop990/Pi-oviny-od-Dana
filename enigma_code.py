@@ -22,19 +22,19 @@ class Decodex():
 
     def Number(self):
         for i in range(6):
-            control.RandomNum()
+            panel.RandomNum()
             self.number += str(self.rand_num)
             if self.number in self.num_list:
                 self.number = str("")
-                control.Number()
+                panel.Number()
 
     def GetCodex(self):
-        control.GetLet()
+        panel.GetLet()
         self.number = str("")
         self.let_index = 0
         self.num_list = []
         for i in range(len(self.let)):
-            control.Number()
+            panel.Number()
             self.num_list.append(self.number)
             self.key = self.let[self.let_index]
             self.codex[self.key] = self.number
@@ -44,8 +44,6 @@ class Decodex():
 
     def Code(self):
         self.safe_decode = True
-        self.text = str(input("Please enter message: "))
-        self.result = self.text
         self.let_index = 0
         for i in range(len(self.let)):
             self.key = self.let[self.let_index]
@@ -61,13 +59,13 @@ class Decodex():
             self.text = self.result
             for i in range(len(self.let)):
                 self.number = self.codex[self.let[self.let_index]]
-                self.key = control.search_by_val(self.number)
+                self.key = panel.search_by_val(self.number)
                 self.text = self.text.replace(" " + self.number, self.key)
                 self.let_index += 1
             print("Message: " + self.text)
+            self.safe_decode = False
         else:
             print("You need to code a message first.")
-            control.Main()
 
     def search_by_val(self, val):
         for keys in self.codex:
@@ -83,44 +81,86 @@ class Decodex():
 
     def Main(self):
         self.command = str(input(">> "))
-        if self.command == "/code":
-            control.Code()
-            control.Main()
+        if self.command[0] == "/":
+            if "/code" in self.command:
+                if self.command == "/code":
+                    self.text = str(input("Please enter message: "))
+                    self.result = self.text
+                    panel.Code()
+                    panel.Main()
+                elif "/code" in self.command:
+                    self.text = self.command.replace("/code ", "")
+                    self.result = self.text
+                    panel.Code()
+                    panel.Main()
 
-        elif self.command == "/decode":
-            control.Decode()
-            control.Main()
+            elif "/decode" in self.command:
+                if self.command == "/decode":
+                    panel.Decode()
+                    panel.Main()
+                elif "/decode" in self.command:
+                    self.result = self.command.replace("/decode", "")
+                    for letter in self.let:
+                        if letter in self.result:
+                            print("Please enter only 1 and 0.")
+                            panel.Main()
+                    self.safe_decode = True
+                    panel.Decode()
+                    panel.Main()
 
-        elif self.command == "/getcodex":
-            control.GetCodex()
-            control.Main()
+            elif "/newcodex" in self.command:
+                panel.GetCodex()
+                panel.Main()
 
-        elif self.command == "/getlet":
-            control.GetLet()
-            print(self.let)
-            control.Main()
+            elif "/print" in self.command:
+                self.object = self.command.replace("/print ", "")
+                if self.object == "codex":
+                    print(self.codex)
+                    panel.Main()
+                elif self.object == "/letters":
+                    panel.GetLet()
+                    print(self.let)
+                    panel.Main()
 
-        elif self.command == "/exit":
-            exit()
+            elif "/getkey" in self.command:
+                if self.command == "/getkey":
+                    try:
+                        self.object = str(input("Enter a number: "))
+                    except:
+                        print("Please enter a valid number")
+                    else:
+                        print("Letter: " + panel.search_by_val(self.object))
+                        panel.Main()
+                elif "/getkey" in self.command:
+                    self.object = str(self.command.replace("/getkey ", ""))
+                    print("Letter: " + panel.search_by_val(self.object))
+                    panel.Main()
 
-        elif self.command == "/help":
-            print("Avaible commands: /code /decode /exit /help /getcodex /getlet /searchbyval")
-            control.Main()
+            elif "/getvalue" in self.command:
+                self.object = self.command.replace("/getvalue ", "")
+                try:
+                    print("Letter: " + self.codex[self.object])
+                except:
+                    print("You can enter only one letter.")
+                else:
+                    panel.Main()
 
-        elif self.command == "/searchbyval":
-            try:
-                self.value_for_search = str(input("Enter a number: "))
-            except:
-                raise TypeError
-                print("Please enter a valid number")
+            elif self.command == "/help":
+                print("Avaible commands: ")
+                panel.Main()
+
+            elif "/exit" in self.command:
+                exit()
+
             else:
-                print("Letter: " + control.search_by_val(self.value_for_search))
-                control.Main()
-
+                print("There is no command named " + self.command)
+                panel.Main()
         else:
-            print("There is no command named " + self.command)
-            control.Main()
+            print("Please enter a valid command, to get command list type: /help")
+            panel.Main()
 
-control = Decodex()
-control.GetCodex()
-control.Main()
+panel = Decodex()
+panel.GetCodex()
+
+if __name__ == "__main__":
+    panel.Main()
