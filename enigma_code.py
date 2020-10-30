@@ -29,6 +29,9 @@ class Decodex():
 
     def GetCodex(self):
         control.GetLet()
+        self.number = str("")
+        self.let_index = 0
+        self.num_list = []
         for i in range(len(self.let)):
             control.Number()
             self.num_list.append(self.number)
@@ -49,7 +52,6 @@ class Decodex():
             self.let_index += 1
             self.number = str("")
         print("Result: " + self.result)
-        control.Main()
 
     def Decode(self):
         self.let_index = 0
@@ -60,7 +62,6 @@ class Decodex():
             self.text = self.text.replace(" " + self.number, self.key)
             self.let_index += 1
         print(self.text)
-        control.Main()
 
     def search_by_val(self, val):
         for keys in self.codex:
@@ -78,13 +79,39 @@ class Decodex():
         self.command = str(input(">> "))
         if self.command == "/code":
             control.Code()
+            control.Main()
+
         elif self.command == "/decode":
             control.Decode()
+            control.Main()
+
+        elif self.command == "/getcodex":
+            control.GetCodex()
+            control.Main()
+
+        elif self.command == "/getlet":
+            control.GetLet()
+            print(self.let)
+            control.Main()
+
         elif self.command == "/exit":
             exit()
+
         elif self.command == "/help":
-            print("Avaible commands: /code /decode /exit /help")
+            print("Avaible commands: /code /decode /exit /help /getcodex /getlet /searchbyval")
             control.Main()
+
+        elif self.command == "/searchbyval":
+            try:
+                self.useless = int(input("Enter a number: "))
+            except:
+                raise TypeError
+                print("Please enter a valid number")
+            else:
+                self.useless = control.search_by_val(self.useless)
+                print(self.useless)
+                control.Main()
+
         else:
             print("There is no command named " + self.command)
             control.Main()
