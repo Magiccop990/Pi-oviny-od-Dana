@@ -117,9 +117,12 @@ class Decodex():
                 if self.object == "codex":
                     print(self.codex)
                     panel.Main()
-                elif self.object == "/letters":
+                elif self.object == "letters":
                     panel.GetLet()
                     print(self.let)
+                    panel.Main()
+                else:
+                    print("You need to enter a keyword.")
                     panel.Main()
 
             elif "/getkey" in self.command:
@@ -137,16 +140,25 @@ class Decodex():
                     panel.Main()
 
             elif "/getvalue" in self.command:
-                self.object = self.command.replace("/getvalue ", "")
-                try:
-                    print("Letter: " + self.codex[self.object])
-                except:
-                    print("You can enter only one letter.")
-                else:
-                    panel.Main()
+                if "/getvalue" == self.command:
+                    self.object = str(input("Please enter 1 letter: "))
+                    try:
+                        print("Letter: " + self.codex[self.object])
+                    except:
+                        print("You can enter only one letter.")
+                    else:
+                        panel.Main()
+                if "/getvalue" in self.command:
+                    self.object = self.command.replace("/getvalue ", "")
+                    try:
+                        print("Letter: " + self.codex[self.object])
+                    except:
+                        print("You can enter only one letter.")
+                    else:
+                        panel.Main()
 
             elif self.command == "/help":
-                print("Avaible commands: ")
+                print("Avaible commands: /code /decode /newcodex /print /getkey /getvalue /help /exit")
                 panel.Main()
 
             elif "/exit" in self.command:
@@ -155,6 +167,7 @@ class Decodex():
             else:
                 print("There is no command named " + self.command)
                 panel.Main()
+
         else:
             print("Please enter a valid command, to get command list type: /help")
             panel.Main()
