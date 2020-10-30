@@ -76,10 +76,7 @@ class Decodex():
         try:
             self.letters_file = open("letter.txt", "r")
         except:
-            self.letters_file_create = open("letter.txt", "w")
-            self.letters_file_create.write("")
-            print("File has been created, but you need to download the file from https://github.com/Streamer272/Pi-oviny-od-Dana/blob/master/letter.txt")
-            self.letters_file_create.close()
+            print("\nWe cant fint 'letter.txt', you should consider downloading 'letter.txt' from https://github.com/Streamer272/Pi-oviny-od-Dana/blob/master/letter.txt\n")
             exit()
         else:
             self.letter = self.letters_file.read()
