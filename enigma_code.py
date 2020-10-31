@@ -1,5 +1,5 @@
 #variables
-import time, random, os, socket
+import random, socket
 
 #variables
 symbols = [1, 0]
@@ -74,6 +74,7 @@ class Decodex():
         return self.result
 
     def Decode(self, to_decode):
+        panel.GetLet()
         self.result = to_decode
         self.let_index = 0
         self.text = self.result
@@ -246,7 +247,7 @@ class CommandLine():
 
             elif self.getkey_command in self.command:
                 safe_codex = panel.TesCod()
-                if self.safe_codex == True:
+                if safe_codex == True:
                     self.obj = str("")
                     if self.command == self.getkey_command:
                         try:
@@ -267,7 +268,7 @@ class CommandLine():
 
             elif self.getvalue_command in self.command:
                 safe_codex = panel.TesCod()
-                if self.safe_codex == True:
+                if safe_codex == True:
                     self.obj = str("")
                     if self.getvalue_command == self.command:
                         self.obj = str(input("Please enter 1 letter: "))
@@ -306,10 +307,15 @@ class CommandLine():
                 terminal.Main()
 
             if self.command == self.client_command:
-                recieve = cisco.Client()
-                msg = panel.Decode(recieve)
-                print("Message: " + msg)
-                terminal.Main()
+                safe_codex = panel.TesCod()
+                if safe_codex == True:
+                    recieve = cisco.Client()
+                    msg = panel.Decode(recieve)
+                    print("Message: " + msg)
+                    terminal.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
+                    terminal.Main()
 
             elif self.command == self.server_command:
                 safe_codex = panel.TesCod()
@@ -346,15 +352,13 @@ class Online():
         s.bind((socket.gethostname(), self.frequency))
         s.listen(5)
         clientsocket, adress = s.accept()
-        print("Client successesfuly connected...")
+        print("Client recieved the message...")
         clientsocket.send(bytes(message, "utf-8"))
         clientsocket.close()
 
     def Client(self):
-        print("Client running...")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((socket.gethostname(), self.frequency))
-        print("Successesfuly connecter to server...")
         full_msg = ""
         while True:
             msg = s.recv(8)
