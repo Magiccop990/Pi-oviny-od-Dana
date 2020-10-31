@@ -60,6 +60,7 @@ class Decodex():
         number = self.number
 
     def NewCodex(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         self.safe_codex = True
         panel.GetLet()
         self.number = str("")
@@ -82,6 +83,8 @@ class Decodex():
         codex = self.codex
 
     def Code(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
+        self.result = msg
         self.safe_decode = True
         self.let_index = 0
         for i in range(len(self.let)):
@@ -90,7 +93,6 @@ class Decodex():
             self.result = self.result.replace(self.key, " " + self.number)
             self.let_index += 1
             self.number = str("")
-        print("Result: " + self.result)
         #making variables global
         safe_codex = self.safe_codex
         let_index = self.let_index
@@ -99,6 +101,8 @@ class Decodex():
         result = self.result
 
     def Decode(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
+        self.result = msg
         if self.safe_decode == True:
             self.let_index = 0
             self.text = self.result
@@ -125,6 +129,7 @@ class Decodex():
                 return keys
 
     def GetLet(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         try:
             self.letters_file = open("letter.txt", "r")
         except:
@@ -142,6 +147,7 @@ class Decodex():
         letters_file = self.letters_file
 
     def SaveCodex(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         self.codex_file = open("codex.txt", "w")
         self.let_index = 0
         for i in range(len(self.let)):
@@ -159,8 +165,10 @@ class Decodex():
         codex_file = self.codex_file
 
     def ReadCodex(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         panel.GetLet()
         self.safe_codex = True
+        safe_codex = True
         self.obj = []
         self.codex = {}
         self.codex_read = open("codex.txt", "r")
@@ -202,7 +210,7 @@ class CommandLine():
 
     #making variables global
     def GetVariables(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
         self.number = number
         self.symbols = symbols
         self.let = let
@@ -222,6 +230,7 @@ class CommandLine():
         self.codex_read = codex_read
 
     def Main(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
         terminal.GetVariables()
         panel.GetLet()
         self.command = str(input(">> "))
@@ -230,16 +239,21 @@ class CommandLine():
                 pass
 
             elif self.code_command in self.command:
+                self.safe_codex = safe_codex
                 if self.safe_codex == True:
-                    if self.command == self.code:
+                    if self.command == self.code_command:
                         self.text = str(input("Please enter message: "))
                         self.result = self.text
+                        msg = self.result
                         panel.Code()
+                        print("Result: " + self.result)
                         terminal.Main()
                     elif self.code_command in self.command:
                         self.text = self.command.replace(self.code_command + " ", "")
                         self.result = self.text
+                        msg = self.result
                         panel.Code()
+                        print("Result: " + self.result)
                         terminal.Main()
                 else:
                     print("Codex has not been definied. Please definy the codex")
@@ -248,6 +262,7 @@ class CommandLine():
             elif self.decode_command in self.command:
                 if self.safe_codex == True:
                     if self.command == self.decode_command:
+                        msg = self.result
                         panel.Decode()
                         terminal.Main()
                     elif self.decode_command in self.command:
@@ -257,6 +272,7 @@ class CommandLine():
                                 print("Please enter only 1 and 0.")
                                 terminal.Main()
                         self.safe_decode = True
+                        msg = self.result
                         panel.Decode()
                         terminal.Main()
                 else:
@@ -353,8 +369,18 @@ class CommandLine():
                 terminal.Main()
 
             elif self.command == self.server_command:
-                cisco.Server()
-                terminal.Main()
+                global safe_codex
+                if safe_codex == True:
+                    msg = str(input("Please enter message: "))
+                    self.text = msg
+                    self.result = self.text
+                    panel.Code()
+                    msg = self.result
+                    cisco.Server()
+                    terminal.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
+                    terminal.Main()
 
             elif self.command == self.frequency_command:
                 self.frequency = int(input("Enter new frequency: "))
@@ -380,7 +406,6 @@ class Online():
         s.listen(5)
         clientsocket, adress = s.accept()
         print("Client successesfuly connected...")
-        msg = str(input("Please enter message: "))
         clientsocket.send(bytes(msg, "utf-8"))
         clientsocket.close()
 
