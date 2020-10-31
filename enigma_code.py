@@ -10,13 +10,11 @@ num_list = list()
 let_index = 0
 key = ""
 result = ""
-safe_decode = False
 text = ""
 letter = ""
 alphabet = ""
 letters_file = ""
 codex_file = ""
-safe_codex = False
 obj = ""
 codex_read = ""
 
@@ -24,7 +22,7 @@ codex_read = ""
 #code, decode class
 class Decodex():
     def __init__(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
+        global number, symbols, let, codex, num_list, let_index, key, result, text, letter, alphabet, letters_file, codex_file, obj, codex_read
         self.number = number
         self.symbols = symbols
         self.let = let
@@ -34,58 +32,38 @@ class Decodex():
         self.num_list = num_list
         self.safe_decode = False
         self.safe_codex = False
-        #making variables global
-        number = self.number
-        symbols = self.symbols
-        let = self.let
-        codex = self.codex
-        key = self.key
-        let_index = self.let_index
-        num_list = self.num_list
-        safe_decode = self.safe_decode
-        safe_codex = self.safe_codex
 
     def RandomNum(self):
-        self.rand_num = random.choice(self.symbols)
-        rand_num = self.rand_num
+        rand_num = random.choice(self.symbols)
+        return rand_num
 
     def Number(self):
         for i in range(6):
-            panel.RandomNum()
-            self.number += str(self.rand_num)
+            rand_num = panel.RandomNum()
+            self.number += str(rand_num)
             if self.number in self.num_list:
                 self.number = str("")
                 panel.Number()
-        #making variables global
-        number = self.number
+        return self.number
 
     def NewCodex(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
+        self.let = panel.GetLet()
         self.safe_codex = True
-        panel.GetLet()
         self.number = str("")
         self.let_index = 0
         self.num_list = []
         for i in range(len(self.let)):
-            panel.Number()
-            self.num_list.append(self.number)
+            number_to_codex = panel.Number()
+            self.num_list.append(number_to_codex)
             self.key = self.let[self.let_index]
             self.codex[self.key] = self.number
             self.let_index += 1
             self.number = str("")
         print("Codex succssesfuly created...")
-        #making variables global
-        safe_codex = self.safe_codex
-        number = self.number
-        let_index = self.let_index
-        num_list = self.num_list
-        key = self.key
-        codex = self.codex
+        return codex
 
-    def Code(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
-        self.result = msg
-        self.safe_decode = True
+    def Code(self, to_code):
+        self.result = to_code
         self.let_index = 0
         for i in range(len(self.let)):
             self.key = self.let[self.let_index]
@@ -93,35 +71,18 @@ class Decodex():
             self.result = self.result.replace(self.key, " " + self.number)
             self.let_index += 1
             self.number = str("")
-        #making variables global
-        safe_codex = self.safe_codex
-        let_index = self.let_index
-        key = self.key
-        number = self.number
-        result = self.result
+        return self.result
 
-    def Decode(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
-        self.result = msg
-        if self.safe_decode == True:
-            self.let_index = 0
-            self.text = self.result
-            for i in range(len(self.let)):
-                self.number = self.codex[self.let[self.let_index]]
-                self.key = panel.search_by_val(self.number)
-                self.text = self.text.replace(" " + self.number, self.key)
-                self.let_index += 1
-            print("Message: " + self.text)
-            self.safe_decode = False
-        else:
-            print("You need to code a message first.")
-        #making variables global
-        safe_decode = self.safe_decode
-        let_index = self.let_index
-        text = self.text
-        result = self.result
-        number = self.number
-        key = self.key
+    def Decode(self, to_decode):
+        self.result = to_decode
+        self.let_index = 0
+        self.text = self.result
+        for i in range(len(self.let)):
+            self.number = self.codex[self.let[self.let_index]]
+            self.key = panel.search_by_val(self.number)
+            self.text = self.text.replace(" " + self.number, self.key)
+            self.let_index += 1
+        return self.text
 
     def search_by_val(self, val):
         for keys in self.codex:
@@ -129,7 +90,6 @@ class Decodex():
                 return keys
 
     def GetLet(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         try:
             self.letters_file = open("letter.txt", "r")
         except:
@@ -140,14 +100,9 @@ class Decodex():
             self.alphabet = self.letter.split("\n")
             self.let = self.alphabet
             self.letters_file.close()
-        #making variables global
-        letter = self.letter
-        alphabet = self.alphabet
-        let = self.let
-        letters_file = self.letters_file
+        return self.let
 
     def SaveCodex(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         self.codex_file = open("codex.txt", "w")
         self.let_index = 0
         for i in range(len(self.let)):
@@ -157,18 +112,10 @@ class Decodex():
             self.let_index += 1
         self.codex_file.close()
         print("Codex save succssesful...")
-        #making variables global
-        codex_file = self.codex_file
-        let_index = self.let_index
-        number = self.number
-        key = self.key
-        codex_file = self.codex_file
 
     def ReadCodex(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
-        panel.GetLet()
+        self.let = panel.GetLet()
         self.safe_codex = True
-        safe_codex = True
         self.obj = []
         self.codex = {}
         self.codex_read = open("codex.txt", "r")
@@ -179,11 +126,16 @@ class Decodex():
             self.obj = str("")
         print("Codex read succssesful...")
         self.codex_read.close()
-        #making variables global
-        safe_codex = self.safe_codex
-        obj = self.obj
-        codex = self.codex
-        codex_read = self.codex_read
+        return codex
+
+    def TesCod(self):
+        return self.safe_codex
+
+    def SafDec(self, value):
+        if value == True:
+            self.safe_decode = True
+        else:
+            self.safe_decode = False
 
 
 #terminal + commands
@@ -210,60 +162,46 @@ class CommandLine():
 
     #making variables global
     def GetVariables(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
-        self.number = number
-        self.symbols = symbols
-        self.let = let
-        self.codex = codex
-        self.num_list = num_list
-        self.let_index = let_index
-        self.key = key
-        self.result = result
-        self.safe_decode = safe_decode
-        self.text = text
+        global number, symbols, let, codex, num_list, let_index, key, result, letter, alphabet, letters_file, codex_file, obj, codex_read, msg
         self.letter = letter
         self.alphabet = alphabet
         self.letters_file = letters_file
         self.codex_file = codex_file
-        self.safe_codex = safe_codex
         self.obj = obj
         self.codex_read = codex_read
 
     def Main(self):
-        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read, msg
+        global number, symbols, let, codex, num_list, let_index, key, result, letter, alphabet, letters_file, codex_file, obj, codex_read, msg
         terminal.GetVariables()
-        panel.GetLet()
+        self.let = panel.GetLet()
         self.command = str(input(">> "))
         if self.command[0] == "/":
             if "/rename" in self.command:
                 pass
 
             elif self.code_command in self.command:
-                self.safe_codex = safe_codex
-                if self.safe_codex == True:
+                safe_codex = panel.TesCod()
+                if safe_codex == True:
                     if self.command == self.code_command:
-                        self.text = str(input("Please enter message: "))
-                        self.result = self.text
-                        msg = self.result
-                        panel.Code()
-                        print("Result: " + self.result)
+                        msg_to_code = str(input("Please enter message: "))
+                        result_coded = panel.Code(msg_to_code)
+                        print("Result: " + result_coded)
                         terminal.Main()
                     elif self.code_command in self.command:
-                        self.text = self.command.replace(self.code_command + " ", "")
-                        self.result = self.text
-                        msg = self.result
-                        panel.Code()
-                        print("Result: " + self.result)
+                        msg_to_code = self.command.replace(self.code_command + " ", "")
+                        result_coded = panel.Code(msg_to_code)
+                        print("Result: " + result_coded)
                         terminal.Main()
                 else:
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
             elif self.decode_command in self.command:
-                if self.safe_codex == True:
+                safe_codex = panel.TesCod()
+                if safe_codex == True:
                     if self.command == self.decode_command:
-                        msg = self.result
-                        panel.Decode()
+                        msg = panel.Decode(self.result)
+                        print("Message: " + msg)
                         terminal.Main()
                     elif self.decode_command in self.command:
                         self.result = self.command.replace(self.decode_command, "")
@@ -271,30 +209,31 @@ class CommandLine():
                             if letter in self.result:
                                 print("Please enter only 1 and 0.")
                                 terminal.Main()
-                        self.safe_decode = True
-                        msg = self.result
-                        panel.Decode()
+                        panel.SafDec(True)
+                        msg = panel.Decode(self.result)
+                        print("Message: " + msg)
                         terminal.Main()
                 else:
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
             elif self.newcodex_command in self.command:
-                panel.NewCodex()
+                codex = panel.NewCodex()
                 terminal.Main()
 
             elif self.print_command in self.command:
                 self.obj = str("")
                 self.obj = self.command.replace(self.print_command + " ", "")
                 if self.obj == "codex":
-                    if self.safe_codex == True:
+                    safe_codex = panel.TesCod()
+                    if safe_codex == True:
                         print(self.codex)
                         terminal.Main()
                     else:
                         print("Codex has not been definied. Please definy the codex")
                         terminal.Main()
                 elif self.obj == "letters":
-                    panel.GetLet()
+                    self.let = panel.GetLet()
                     print(self.let)
                     terminal.Main()
                 elif self.obj == "keywords":
@@ -306,6 +245,7 @@ class CommandLine():
                     terminal.Main()
 
             elif self.getkey_command in self.command:
+                safe_codex = panel.TesCod()
                 if self.safe_codex == True:
                     self.obj = str("")
                     if self.command == self.getkey_command:
@@ -326,6 +266,7 @@ class CommandLine():
                     terminal.Main()
 
             elif self.getvalue_command in self.command:
+                safe_codex = panel.TesCod()
                 if self.safe_codex == True:
                     self.obj = str("")
                     if self.getvalue_command == self.command:
@@ -357,7 +298,7 @@ class CommandLine():
                 exit()
 
             elif self.getcodex_command in self.command:
-                panel.ReadCodex()
+                self.codex = panel.ReadCodex()
                 terminal.Main()
 
             elif self.savecodex_command in self.command:
@@ -365,18 +306,17 @@ class CommandLine():
                 terminal.Main()
 
             if self.command == self.client_command:
-                cisco.Client()
+                recieve = cisco.Client()
+                msg = panel.Decode(recieve)
+                print("Message: " + msg)
                 terminal.Main()
 
             elif self.command == self.server_command:
-                global safe_codex
+                safe_codex = panel.TesCod()
                 if safe_codex == True:
-                    msg = str(input("Please enter message: "))
-                    self.text = msg
-                    self.result = self.text
-                    panel.Code()
-                    msg = self.result
-                    cisco.Server()
+                    msg_to_code = str(input("Please enter message: "))
+                    msg_to_send = panel.Code(msg_to_code)
+                    cisco.Server(msg_to_send)
                     terminal.Main()
                 else:
                     print("Codex has not been definied. Please definy the codex")
@@ -399,14 +339,15 @@ class CommandLine():
 class Online():
     def __init__(self):
         self.frequency = 1234
-    def Server(self):
+        global msg
+    def Server(self, message):
         print("Server running...")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((socket.gethostname(), self.frequency))
         s.listen(5)
         clientsocket, adress = s.accept()
         print("Client successesfuly connected...")
-        clientsocket.send(bytes(msg, "utf-8"))
+        clientsocket.send(bytes(message, "utf-8"))
         clientsocket.close()
 
     def Client(self):
@@ -420,7 +361,7 @@ class Online():
             if len(msg) <= 0:
                 break
             full_msg += msg.decode("utf-8")
-        print("Message: " + full_msg)
+        return full_msg
 
     def Main(self):
         self.input = str(input(">> "))
