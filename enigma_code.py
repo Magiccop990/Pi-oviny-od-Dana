@@ -7,11 +7,24 @@ number = str("")
 let = list()
 codex = {}
 num_list = list()
+let_index = 0
+key = ""
+result = ""
+safe_decode = False
+text = ""
+letter = ""
+alphabet = ""
+letters_file = ""
+codex_file = ""
+safe_codex = False
+obj = ""
+codex_read = ""
 
 
 #code, decode class
 class Decodex():
     def __init__(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         self.number = number
         self.symbols = symbols
         self.let = let
@@ -115,7 +128,7 @@ class Decodex():
         try:
             self.letters_file = open("letter.txt", "r")
         except:
-            print("\nWe cant fint 'letter.txt', you should consider downloading 'letter.txt' from https://github.com/Streamer272/Main_Repository/blob/master/letter.txt\n")
+            print("\nWe cant fint 'letter.txt', you should consider downloading 'letter.txt' from https://github.com/Streamer272/Main_Repository/blob/ENIGMA/letter.txt\n")
             exit()
         else:
             self.letter = self.letters_file.read()
@@ -169,23 +182,27 @@ class Decodex():
 class CommandLine():
     def __init__(self):
         #commands
-        self.code = "/code"
-        self.decode = "/decode"
-        self.newcodex = "/newcodex"
-        self.print = "/print"
-        self.getkey = "/getkey"
-        self.getvalue = "/getvalue"
-        self.help = "/help"
-        self.exit = "/exit"
-        self.getcodex = "/getcodex"
-        self.savecodex = "/savecodex"
-        self.command_list = [self.code, self.decode, self.newcodex, self.print, self.getkey, self.getvalue, self.help, self.exit, self.getcodex, self.savecodex]
+        self.code_command= "/code"
+        self.decode_command = "/decode"
+        self.newcodex_command = "/newcodex"
+        self.print_command = "/print"
+        self.getkey_command = "/getkey"
+        self.getvalue_command = "/getvalue"
+        self.help_command = "/help"
+        self.exit_command = "/exit"
+        self.getcodex_command = "/getcodex"
+        self.savecodex_command = "/savecodex"
+        self.frequency_command = "/frequency"
+        self.server_command = "/server"
+        self.client_command = "/client"
+        self.command_list = [self.code_command, self.decode_command, self.newcodex_command, self.print_command, self.getkey_command, self.getvalue_command, self.help_command, self.exit_command, self.getcodex_command, self.savecodex_command, self.frequency_command , self.client_command , self.server_command]
         self.text_output = str(self.command_list).replace(",", "")
         self.text_output = self.text_output.replace("[", "")
         self.text_output = self.text_output.replace("]", "")
 
     #making variables global
     def GetVariables(self):
+        global number, symbols, let, codex, num_list, let_index, key, result, safe_decode, text, letter, alphabet, letters_file, codex_file, safe_codex, obj, codex_read
         self.number = number
         self.symbols = symbols
         self.let = let
@@ -209,15 +226,18 @@ class CommandLine():
         panel.GetLet()
         self.command = str(input(">> "))
         if self.command[0] == "/":
-            if self.code in self.command:
+            if "/rename" in self.command:
+                pass
+
+            elif self.code_command in self.command:
                 if self.safe_codex == True:
                     if self.command == self.code:
                         self.text = str(input("Please enter message: "))
                         self.result = self.text
                         panel.Code()
                         terminal.Main()
-                    elif self.code in self.command:
-                        self.text = self.command.replace(self.code + " ", "")
+                    elif self.code_command in self.command:
+                        self.text = self.command.replace(self.code_command + " ", "")
                         self.result = self.text
                         panel.Code()
                         terminal.Main()
@@ -225,13 +245,13 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.decode in self.command:
+            elif self.decode_command in self.command:
                 if self.safe_codex == True:
-                    if self.command == self.decode:
+                    if self.command == self.decode_command:
                         panel.Decode()
                         terminal.Main()
-                    elif self.decode in self.command:
-                        self.result = self.command.replace(self.decode, "")
+                    elif self.decode_command in self.command:
+                        self.result = self.command.replace(self.decode_command, "")
                         for letter in self.let:
                             if letter in self.result:
                                 print("Please enter only 1 and 0.")
@@ -243,13 +263,13 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.newcodex in self.command:
+            elif self.newcodex_command in self.command:
                 panel.NewCodex()
                 terminal.Main()
 
-            elif self.print in self.command:
+            elif self.print_command in self.command:
                 self.obj = str("")
-                self.obj = self.command.replace(self.print + " ", "")
+                self.obj = self.command.replace(self.print_command + " ", "")
                 if self.obj == "codex":
                     if self.safe_codex == True:
                         print(self.codex)
@@ -269,10 +289,10 @@ class CommandLine():
                     self.obj = str("")
                     terminal.Main()
 
-            elif self.getkey in self.command:
+            elif self.getkey_command in self.command:
                 if self.safe_codex == True:
                     self.obj = str("")
-                    if self.command == self.getkey:
+                    if self.command == self.getkey_command:
                         try:
                             self.obj = str(input("Enter a number: "))
                         except:
@@ -280,8 +300,8 @@ class CommandLine():
                         else:
                             print("Letter: " + panel.search_by_val(self.obj))
                             terminal.Main()
-                    elif self.getkey in self.command:
-                        self.obj = str(self.command.replace(self.getkey + " ", ""))
+                    elif self.getkey_command in self.command:
+                        self.obj = str(self.command.replace(self.getkey_command + " ", ""))
                         print("Letter: " + panel.search_by_val(self.obj))
                         self.obj = str("")
                         terminal.Main()
@@ -289,10 +309,10 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.getvalue in self.command:
+            elif self.getvalue_command in self.command:
                 if self.safe_codex == True:
                     self.obj = str("")
-                    if self.getvalue == self.command:
+                    if self.getvalue_command == self.command:
                         self.obj = str(input("Please enter 1 letter: "))
                         try:
                             print("Letter: " + self.codex[self.obj])
@@ -300,8 +320,8 @@ class CommandLine():
                             print("You can enter only one letter.")
                         else:
                             terminal.Main()
-                    if self.getvalue in self.command:
-                        self.obj = self.command.replace(self.getvalue + " ", "")
+                    if self.getvalue_command in self.command:
+                        self.obj = self.command.replace(self.getvalue_command + " ", "")
                         try:
                             print("Letter: " + self.codex[self.obj])
                         except:
@@ -313,30 +333,30 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.command == self.help:
+            elif self.command == self.help_command:
                 print("Avaible commands: " + self.text_output)
                 terminal.Main()
 
-            elif self.exit in self.command:
+            elif self.exit_command in self.command:
                 exit()
 
-            elif self.getcodex in self.command:
+            elif self.getcodex_command in self.command:
                 panel.ReadCodex()
                 terminal.Main()
 
-            elif self.savecodex in self.command:
+            elif self.savecodex_command in self.command:
                 panel.SaveCodex()
                 terminal.Main()
 
-            if self.input == "/client":
+            if self.command == self.client_command:
                 cisco.Client()
                 terminal.Main()
 
-            elif self.input == "/server":
+            elif self.command == self.server_command:
                 cisco.Server()
                 terminal.Main()
 
-            elif self.input == "/frequency":
+            elif self.command == self.frequency_command:
                 self.frequency = int(input("Enter new frequency: "))
                 terminal.Main()
 
@@ -351,7 +371,6 @@ class CommandLine():
 
 #cisco, local usage
 class Online():
-    terminal.GetVariables()
     def __init__(self):
         self.frequency = 1234
     def Server(self):
