@@ -1,3 +1,4 @@
+#variables
 import time, random, os, socket
 
 #variables
@@ -381,9 +382,12 @@ class Online():
         self.input = str(input(">> "))
 
 
+#def classes
 panel = Decodex()
 terminal = CommandLine()
 cisco = Online()
 
+
+#if not imported start process
 if __name__ == "__main__":
     terminal.Main()
