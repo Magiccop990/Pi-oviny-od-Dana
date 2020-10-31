@@ -142,25 +142,25 @@ class Decodex():
         return self.codex
 
 
+
 #terminal + commands
 class CommandLine():
     def __init__(self):
         #commands
-        self.code_command= 0
+        self.code_command = 0
         self.decode_command = 1
         self.newcodex_command = 2
-        self.print_command = 3
-        self.getkey_command = 4
-        self.getvalue_command = 5
-        self.help_command = 6
-        self.exit_command = 7
-        self.getcodex_command = 8
-        self.savecodex_command = 9
-        self.frequency_command = 10
-        self.server_command = 11
-        self.client_command = 12
+        self.getkey_command = 3
+        self.getvalue_command = 4
+        self.help_command = 5
+        self.exit_command = 6
+        self.getcodex_command = 7
+        self.savecodex_command = 8
+        self.frequency_command = 9
+        self.server_command = 10
+        self.client_command = 11
         self.command_list = ["/code", "/decode", "/newcodex", 
-        "/print", "/getkey", "/getvalue", "/help", 
+        "/getkey", "/getvalue", "/help", 
         "/exit", "/getcodex", "/savecodex", "/frequency", 
         "/server", "/client"]
         
@@ -226,30 +226,6 @@ class CommandLine():
                 codex = panel.NewCodex()
                 terminal.Main()
 
-            elif self.command_list[self.print_command] in self.command:
-                self.obj = str("")
-                self.obj = self.command.replace(self.command_list[self.print_command] + " ", "")
-                if self.obj == "codex":
-                    safe_codex = panel.TesCod()
-                    if safe_codex == True:
-                        self.codex = panel.GetCod()
-                        print(self.codex)
-                        terminal.Main()
-                    else:
-                        print("Codex has not been definied. Please definy the codex")
-                        terminal.Main()
-                elif self.obj == "letters":
-                    self.let = panel.GetLet()
-                    print(self.let)
-                    terminal.Main()
-                elif self.obj == "keywords":
-                    print("Avable keywords: codex, letters")
-                    terminal.Main()
-                else:
-                    print("You need to enter a keyword. To get keywords please type: /print keywords")
-                    self.obj = str("")
-                    terminal.Main()
-
             elif self.command_list[self.getkey_command] in self.command:
                 safe_codex = panel.TesCod()
                 if safe_codex == True:
@@ -296,7 +272,7 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.command == self.command_list[self.help_command]:
+            elif self.command == self.command_list[self.help_command] or self.command == "/":
                 self.text_output = str(self.command_list).replace(",", "")
                 self.text_output = self.text_output.replace("[", "")
                 self.text_output = self.text_output.replace("]", "")
@@ -304,7 +280,7 @@ class CommandLine():
                 terminal.Main()
 
             elif self.command_list[self.exit_command] in self.command:
-                print("K bey!")
+                print("Closing...")
                 exit()
 
             elif self.command_list[self.getcodex_command] in self.command:
@@ -337,28 +313,53 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
-            elif self.command == self.command_list[self.frequency_command]:
-                frequency = int(input("Enter new frequency: "))
-                terminal.Main()
+            elif self.command_list[self.frequency_command] in self.command:
+                if self.command_list[self.frequency_command] == self.command:
+                    frequency = int(input("Enter new frequency: "))
+                    print("The frequency is now: " + frequency)
+                    terminal.Main()
+                elif self.command_list[self.frequency_command] in self.command:
+                    frequency = self.command.replace(self.command + " ", "")
+                    print("The frequency is now: " + frequency)
+                    terminal.Main()
 
             else:
                 print("There is no command named " + self.command)
                 terminal.Main()
 
         else:
-            print("Please enter a valid command, to get command list type: /help")
-            terminal.Main()
+            if self.command == "codex":
+                safe_codex = panel.TesCod()
+                if safe_codex == True:
+                    self.codex = panel.GetCod()
+                    print(self.codex)
+                    terminal.Main()
+                else:
+                    print("Codex has not been definied. Please definy the codex")
+                    terminal.Main()
+            elif self.command == "let" or self.command == "letters":
+                self.let = panel.GetLet()
+                print(self.let)
+                terminal.Main()
+            elif self.command == "keywords":
+                print("Avable keywords: codex, letters")
+                terminal.Main()
+            else:
+                print("Please enter a valid command, to get command list type: /help or /")
+                terminal.Main()
+
 
 
 #cisco, local usage
 class Online():
     def __init__(self):
+        global msg, frequency
         frequency = 1234
-        global msg
+
     def Server(self, message):
         print("Server running...")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((socket.gethostname(), self.frequency))
+        s.bind((socket.gethostname(), int(frequency)))
         s.listen(5)
         clientsocket, adress = s.accept()
         print("Client recieved the message...")
@@ -367,7 +368,7 @@ class Online():
 
     def Client(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((socket.gethostname(), self.frequency))
+        s.connect((socket.gethostname(), int(frequency)))
         full_msg = ""
         while True:
             msg = s.recv(8)
