@@ -32,6 +32,7 @@ class Decodex():
         self.num_list = num_list
         self.safe_decode = False
         self.safe_codex = False
+        self.setting = False
 
     def RandomNum(self):
         rand_num = random.choice(self.symbols)
@@ -103,8 +104,8 @@ class Decodex():
             self.letters_file.close()
         return self.let
 
-    def SaveCodex(self):
-        self.codex_file = open("codex.txt", "w")
+    def SaveCodex(self, filename_codex):
+        self.codex_file = open(self.filename, "w")
         self.let_index = 0
         for i in range(len(self.let)):
             self.number = self.codex[self.let[self.let_index]]
@@ -114,20 +115,32 @@ class Decodex():
         self.codex_file.close()
         print("Codex save succssesful...")
 
-    def ReadCodex(self):
+    def ReadCodex(self, filename_codex):
+        filename = filename_codex
         self.let = panel.GetLet()
         self.safe_codex = True
         self.obj = []
         self.codex = {}
-        self.codex_read = open("codex.txt", "r")
-        for i in range(len(self.let)):
-            self.obj = self.codex_read.readline().replace("\n", "")
-            self.obj = self.obj.split(";")
-            self.codex[str(self.obj[0])] = str(self.obj[1])
-            self.obj = str("")
-        print("Codex read succssesful...")
-        self.codex_read.close()
-        return codex
+        try:
+            self.codex_read = open(filename, "r")
+        except:
+            backup_filename = str(input(f"We can't find {filename} :( If you already have a text file, please enter it's name: "))
+            if backup_filename[-1] == "t" and backup_filename[-2] == "x" and backup_filename[-3] == "t" and backup_filename[-4] == ".":
+                terminal.SetCodDirTo(True)
+                panel.ReadCodex(backup_filename)
+            else:
+                print("Codex read wasn't successesful... Try again by typing /getcodex")
+                terminal.Main()
+        else:
+            for i in range(len(self.let)):
+                self.obj = self.codex_read.readline().replace("\n", "")
+                self.obj = self.obj.split(";")
+                self.codex[str(self.obj[0])] = str(self.obj[1])
+                self.obj = str("")
+            print("Codex read succssesful...")
+            self.codex_read.close()
+            terminal.SetCodDirTo(False)
+            return codex
 
     def TesCod(self):
         return self.safe_codex
@@ -140,6 +153,15 @@ class Decodex():
 
     def GetCod(self):
         return self.codex
+
+    def Setting(self, value):
+        if value == True:
+            self.setting = True
+        elif value == False:
+            self.setting = False
+
+    def GetSet(self):
+        return self.setting
 
 
 
@@ -159,15 +181,23 @@ class CommandLine():
         self.frequency_command = 9
         self.server_command = 10
         self.client_command = 11
+        self.setting_command = 12
         self.command_list = ["/code", "/decode", "/newcodex", 
         "/getkey", "/getvalue", "/help", 
         "/exit", "/getcodex", "/savecodex", "/frequency", 
-        "/server", "/client"]
+        "/server", "/client", "/setting"]
+        self.backup_filename_save = False
         
     #making variables global
     def GetVariables(self):
         global codex, obj
         self.obj = obj
+
+    def SetCodDirTo(self, value):
+        if value == True:
+            self.backup_filename_save = True
+        elif value == False:
+            self.backup_filename_save = False
 
     def Main(self):
         global let, codex, result, obj, msg
@@ -284,12 +314,17 @@ class CommandLine():
                 exit()
 
             elif self.command_list[self.getcodex_command] in self.command:
-                self.codex = panel.ReadCodex()
+                self.codex = panel.ReadCodex("codex.txt")
                 terminal.Main()
 
             elif self.command_list[self.savecodex_command] in self.command:
-                panel.SaveCodex()
-                terminal.Main()
+                if self.backup_filename_save == False:
+                    panel.SaveCodex("codex.txt")
+                    terminal.Main()
+                elif self.backup_filename_save == True:
+                    filename_input = str(input("Please enter filename to save codex with .txt:"))
+                    panel.SaveCodex()
+                    terminal.Main()
 
             elif self.command == self.command_list[self.client_command]:
                 safe_codex = panel.TesCod()
@@ -321,6 +356,28 @@ class CommandLine():
                 elif self.command_list[self.frequency_command] in self.command:
                     frequency = self.command.replace(self.command + " ", "")
                     print("The frequency is now: " + frequency)
+                    terminal.Main()
+
+            elif self.command_list[self.setting_command] in self.command:
+                self.command = self.command.replace(self.command_list[self.setting_command] + " ", "")
+                setting = panel.GetSet()
+                if self.command == "True" or self.command == "true" or self.command == "t":
+                    if setting == True:
+                        terminal.Main()
+                    elif setting == False:
+                        panel.Setting(True)
+                        print("Setting set to: " + self.command)
+                        terminal.Main()
+                elif self.command == "False" or self.command == "false" or self.command == "f":
+                    if setting == True:
+                        panel.Setting(False)
+                        print("Setting set to: " + self.command)
+                        terminal.Main()
+                    elif setting == False:
+                        terminal.Main()
+                
+                else:
+                    print("Settings dont have this attribute")
                     terminal.Main()
 
             else:
@@ -376,9 +433,6 @@ class Online():
                 break
             full_msg += msg.decode("utf-8")
         return full_msg
-
-    def Main(self):
-        self.input = str(input(">> "))
 
 
 #def classes
