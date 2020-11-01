@@ -3,7 +3,7 @@ import socket, threading, time
 
 class Server():
     def __init__(self):
-        self.frequency = 5050  #frequency
+        self.frequency = 1234  #frequency
         self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
         self.name = socket.gethostname()  #pc name
         print(self.ip + " + " + self.name)
