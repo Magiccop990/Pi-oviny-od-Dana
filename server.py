@@ -1,111 +1,107 @@
 import socket, threading, time
 
-frequency = 5050  #frequency
-ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
-name = socket.gethostname()  #pc name
-print(ip + " + " + name)
-IP_PORT = (ip, frequency)  #server describtiom
-FORMAT = "utf-8"
-DISCONNECT_MSG = "!disconnect"
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  #socket type
-server.bind(IP_PORT)  #bind the server describtion to IP_PORT
-msg_for1 = []
-msg_for2 = []
-connected1 = False
-connected2 = False
-stop = False
+class Server():
+    def __init__(self):
+        self.frequency = 1234  #frequency
+        self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
+        self.name = socket.gethostname()  #pc name
+        print(self.ip + " + " + self.name)
+        self.IP_PORT = (self.ip, self.frequency)  #server describtiom
+        self.FORMAT = "utf-8"
+        self.DISCONNECT_MSG = "!disconnect"
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  #socket type
+        self.server.bind(self.IP_PORT)  #bind the server describtion to IP_PORT
+        self.msg_for1 = []
+        self.msg_for2 = []
+        self.connected1 = False
+        self.connected2 = False
+        self.stop = False
+        self.exit_ = True
 
-def SendToClient1():
-    global msg_for1, client1, connected1, stop
-    stop_thread = threading.Thread(target=wait)
-    stop_thread.start()
-    while True:
-        global msg_for1, client1, connected1, stop
-        if stop == False:
-            time.sleep(1)
-            if connected1 == True:
-                client1.send(str(msg_for1).encode(FORMAT))
-                msg_for1 = []
+    def SendToClient1(self):
+        while True:
+            if len(self.msg_for1) != 0:
+                if self.connected1 == True:
+                    self.client1.send(str(self.msg_for1).encode(self.FORMAT))
+                    self.msg_for1 = []
+                else:
+                    time.sleep(1)
+
+    def SendToClient2(self):
+        while True:
+            if len(self.msg_for2) != 0:
+                if self.connected2 == True:
+                    self.client2.send(str(self.msg_for2).encode(self.FORMAT))
+                    self.msg_for2 = []
+                else:
+                    time.sleep(1)
+
+    def handle_client1(self):
+        while self.connected1:
+            self.msg = self.client1.recv(1024).decode(self.FORMAT)
+            self.msg_for2.append(self.msg)
+            if self.msg == self.DISCONNECT_MSG:
+                self.connected1 = False
+                print(f"{self.IP_PORT} disconnected...")
+                self.msg_for2.append("One member disconnected...")
                 break
-        else:
-            stop = False
-            break
+            print(f"{self.IP_PORT} {self.msg}")
+        self.client1.close()
 
-def wait():
-    global stop
-    time.sleep(60)
-    stop = True
-
-def handle_client1():
-    global msg_for1, msg_for2, client2, client1, connected1, connected2
-    client1, IP_PORT1 = server.accept()  #new connection accept
-    print(f"New client {IP_PORT1}")
-    connected1 = True
-    while connected1:
-        msg = client1.recv(1024).decode(FORMAT)  #recieve message from client 1
-        message_send_thread1 = threading.Thread(target=SendToClient2)
-        message_send_thread1.start()
-        msg_for2.append(msg)
-        if msg == DISCONNECT_MSG:
-            connected1 = False
-            print(f"{IP_PORT} disconnected...")
-            msg_for2.append("One member disconnected...")
-            break
-        print(f"{IP_PORT}: {msg}")
-    client1.close()
-
-def SendToClient2():
-    global msg_for2, client2, connected2, stop
-    stop_thread = threading.Thread(target=wait)
-    stop_thread.start()
-    while True:
-        global msg_for2, client2, connected2, stop
-        if stop == False:
-            time.sleep(1)
-            if connected2 == True:
-                client2.send(str(msg_for2).encode(FORMAT))
-                msg_for2 = []
+    def handle_client2(self):
+        while self.connected2:
+            self.msg = self.client2.recv(1024).decode(self.FORMAT)
+            self.msg_for1.append(self.msg)
+            if self.msg == self.DISCONNECT_MSG:
+                self.connected2 = False
+                print(f"{self.IP_PORT} disconnected...")
+                self.msg_for1.append("One member disconnected...")
                 break
-        else:
-            stop = False
-            break
+            print(f"{self.IP_PORT} {self.msg}")
+        self.client1.close()
 
-def handle_client2():
-    global msg_for2, msg_for1, client1, client2, connected2, connected1
-    client2, IP_PORT2 = server.accept()  #new connection accept
-    print(f"New client {IP_PORT2}")
-    connected2 = True
-    while connected2:
-        msg = client2.recv(1024).decode(FORMAT)  #recieve message from client 2
-        message_send_thread2 = threading.Thread(target=SendToClient1)
-        message_send_thread2.start()
-        msg_for1.append(msg)
-        if msg == DISCONNECT_MSG:
-            connected2 = False
-            print(f"{IP_PORT} disconnected...")
-            msg_for1.append("One member disconnected...")
-            break
-        print(f"{IP_PORT}: {msg}")
-    client1.close()
+    def Exit(self):
+        while True:
+            if self.exit_ == True:
+                time.sleep(10)
+                if self.connected1 == False and self.connected2 == False:
+                    print("Everyone left, it's so dark here...")
+                else:
+                    pass
+            else:
+                break
+    
+    def client1_start(self):
+        self.client1, self.IP_PORT1 = self.server.accept()
+        print(f"New client {self.IP_PORT1}")
+        self.connected1 = True
+        self.message_send_thread1.start()
+        s.handle_client1()
 
-def Exit():
-    global connected1, connected2
-    if connected1 == False and connected2 == False:
-        print("Everyone left, closing...")
-        exit()
-    else:
-        time.sleep(1)
-        pass
+    def client2_start(self):
+        self.client2, self.IP_PORT2 = self.server.accept()
+        print(f"New client {self.IP_PORT2}")
+        self.connected2 = True
+        self.message_send_thread2.start()
+        s.handle_client2()
 
-def start():
-    server.listen()
-    thread1 = threading.Thread(target=handle_client1)  #start that more time than one
-    thread2 = threading.Thread(target=handle_client2)  #yes
-    thread1.start()  #start that thread
-    thread2.start()  #start that thread
-    destroy = threading.Thread(target=Exit)
-    destroy.start()
+    def Threads(self):
+        self.destroy = threading.Thread(target=s.Exit)
+        self.thread1 = threading.Thread(target=s.client1_start)
+        self.thread2 = threading.Thread(target=s.client2_start)
+        self.message_send_thread1 = threading.Thread(target=s.SendToClient2)
+        self.message_send_thread2 = threading.Thread(target=s.SendToClient1)
 
-print("Server is running...")
-start()
+    def main(self):
+        s.Threads()
+        self.server.listen()
+        self.thread1.start()
+        self.thread2.start()
+        self.destroy.start()
+
+s = Server()
+
+if __name__ == "__main__":
+    print("Server is running...")
+    s.main()
