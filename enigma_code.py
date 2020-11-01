@@ -154,14 +154,28 @@ class Decodex():
     def GetCod(self):
         return self.codex
 
-    def Setting(self, value):
+    def SetSetting(self, value):
         if value == True:
             self.setting = True
         elif value == False:
             self.setting = False
 
-    def GetSet(self):
+    def GetSetBol(self):
+        print("Setting: " + str(self.setting))
         return self.setting
+
+    def ReadSetting(self):
+        self.setting_file = open("setting.txt", "r")
+        self.setting = self.setting_file.readline().split(":")[1]
+        print(self.setting)
+
+    def SaveSetting(self):
+        self.setting_file = open("setting.txt", "w")
+        if self.setting == False:
+            self.setting_file.write("setting:False")
+        elif self.setting == True:
+            self.setting_file.write("setting:True")
+        self.setting_file.close()
 
 
 
@@ -322,7 +336,7 @@ class CommandLine():
                     panel.SaveCodex("codex.txt")
                     terminal.Main()
                 elif self.backup_filename_save == True:
-                    filename_input = str(input("Please enter filename to save codex with .txt:"))
+                    filename_input = str(input("Please enter filename to save codex with .txt: "))
                     if filename_input[-1] == "t" and filename_input[-2] == "x" and filename_input[-3] == "t" and filename_input[-4] == ".":
                         panel.SaveCodex(filename_input)
                         terminal.Main()
@@ -363,26 +377,35 @@ class CommandLine():
                     terminal.Main()
 
             elif self.command_list[self.setting_command] in self.command:
-                self.command = self.command.replace(self.command_list[self.setting_command] + " ", "")
-                setting = panel.GetSet()
-                if self.command == "True" or self.command == "true" or self.command == "t":
-                    if setting == True:
-                        terminal.Main()
-                    elif setting == False:
-                        panel.Setting(True)
-                        print("Setting set to: " + self.command)
-                        terminal.Main()
-                elif self.command == "False" or self.command == "false" or self.command == "f":
-                    if setting == True:
-                        panel.Setting(False)
-                        print("Setting set to: " + self.command)
-                        terminal.Main()
-                    elif setting == False:
-                        terminal.Main()
-                
-                else:
-                    print("Settings dont have this attribute")
+                if self.command_list[self.setting_command] == self.command:
+                    panel.ReadSetting()
                     terminal.Main()
+                elif self.command_list[self.setting_command] in self.command:
+                    self.command = self.command.replace(self.command_list[self.setting_command] + " ", "")
+                    setting = panel.GetSetBol()
+                    if self.command == "True" or self.command == "true" or self.command == "t":
+                        print(setting)
+                        if setting == "True":
+                            print("But, the setting is already True")
+                            terminal.Main()
+                        elif setting == "False":
+                            panel.SetSetting(True)
+                            panel.SaveSetting()
+                            print("Setting set to: " + self.command)
+                            terminal.Main()
+                    elif self.command == "False" or self.command == "false" or self.command == "f":
+                        print("f statement activated" + setting)
+                        if setting == "True":
+                            panel.SetSetting(False)
+                            panel.SaveSetting()
+                            print("Setting set to: " + self.command)
+                            terminal.Main()
+                        elif setting == "False":
+                            print("But, the setting is already False")
+                            terminal.Main()
+                    else:
+                        print("Settings dont have this attribute")
+                        terminal.Main()
 
             else:
                 print("There is no command named " + self.command)
