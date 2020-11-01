@@ -8,7 +8,7 @@ class Online():
         self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
         self.IP_PORT = (self.ip, self.frequency)
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.rcv = True
+        self.recieve = True
 
     def Connect(self):
         try:
@@ -20,31 +20,35 @@ class Online():
             pass
 
     def rcv(self):
-        while self.rcv:
-            self.rcv_msg = self.client.recv(2048).decode(self.FORMAT)
-            self.rcv_msg = self.rcv_msg.replace("[", "")
-            self.rcv_msg = self.rcv_msg.replace("]", "")
-            self.rcv_msg = self.rcv_msg.replace("'", "")
-            print(f"Friend: {self.rcv_msg}")
+        while self.recieve:
+            self.recieve_msg = self.client.recv(2048).decode(self.FORMAT)
+            self.recieve_msg = self.recieve_msg.replace("[", "")
+            self.recieve_msg = self.recieve_msg.replace("]", "")
+            self.recieve_msg = self.recieve_msg.replace("'", "")
+            print(f"Friend: {self.recieve_msg}")
             time.sleep(1)
 
     def send(self, msg):
-        self.message_for_server = self.msg.encode(FORMAT)
+        self.message_for_server = msg.encode(self.FORMAT)
         self.client.send(self.message_for_server)
 
-    def main(self):
+    def start(self):
         cisco.Connect()
-        self.rcv_thread = threading.Thread(target=cisco.rcv)
-        self.rcv_thread.start()
+        self.recieve_thread = threading.Thread(target=cisco.rcv)  
+        self.main_thread = threading.Thread(target=cisco.main)
+        self.main_thread.start()
+        self.recieve_thread.start()
+
+    def main(self):
         while True:
             self.to_send = str(input(""))
             if self.to_send == self.DISCONNECT_MSG:
                 cisco.send("!disconnect")
-                break
+                exit()
             else:
                 cisco.send(self.to_send)
 
 cisco = Online()
 
 if __name__ == "__main__":
-    cisco.main()
+    cisco.start()
