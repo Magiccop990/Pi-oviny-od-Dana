@@ -11,24 +11,39 @@ DISCONNECT_MSG = "!disconnect"
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  #socket type
 server.bind(IP_PORT)  #bind the server describtion to IP_PORT
 
-def handle_client(client, IP_PORT):
-    print(f"Welcome {client}")
+def handle_client1():
+    client1, IP_PORT1 = server.accept()  #new connection accept
+    print(f"New client {IP_PORT1}")
     connected = True
     while connected:
-        msg = client.recv(1024).decode(FORMAT)  #recieve message
+        msg = client1.recv(1024).decode(FORMAT)  #recieve message
+        if msg == DISCONNECT_MSG:
+            connected = False
+            print(f"{IP_PORT} disconnected...")
+            break
+        print(f"{IP_PORT}: {msg}")
+        client1.send("msg delivered".encode(FORMAT))
+    client1.close()
+
+def handle_client2():
+    client2, IP_PORT2 = server.accept()  #new connection accept
+    print(f"Welcome {IP_PORT2}")
+    connected = True
+    while connected:
+        msg = client2.recv(1024).decode(FORMAT)  #recieve message
         print(f"{IP_PORT}: {msg}")
         if msg == DISCONNECT_MSG:
             connected = False
             print(f"{IP_PORT} disconnected...")
-        client.send("msg delivered".encode(FORMAT))
-    client.close()
+        client2.send("msg delivered".encode(FORMAT))
+    client2.close()
 
 def start():
     server.listen()
-    while True:
-        connection, IP_PORT = server.accept()  #new connection accept
-        thread = threading.Thread(target=handle_client, args=(connection, IP_PORT))  #start that more time than one
-        thread.start()  #start that thread
+    thread1 = threading.Thread(target=handle_client1)  #start that more time than one
+    thread2 = threading.Thread(target=handle_client2)  #yes
+    thread1.start()  #start that thread
+    thread2.start()  #start that thread
 
 print("Server is running...")
 start()
