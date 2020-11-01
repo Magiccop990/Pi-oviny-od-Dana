@@ -10,16 +10,19 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(IP_PORT)
 
 def rcv():
-    print(client.recv(2048).decode(FORMAT))
+    rcv_msg = client.recv(2048).decode(FORMAT)
+    rcv_msg = rcv_msg.replace("[", "")
+    rcv_msg = rcv_msg.replace("]", "")
+    print(f"Chat: {rcv_msg}")
 
 def send(msg):
     message_for_server = msg.encode(FORMAT)
     client.send(message_for_server)
-    thread = threading.Thread(target=rcv)
-    thread.start()
 
 while True:
-    to_send = str(input(":"))
+    rcv_thread = threading.Thread(target=rcv)
+    rcv_thread.start()
+    to_send = str(input(""))
     if to_send == "!disconnect":
         send(to_send)
         break
