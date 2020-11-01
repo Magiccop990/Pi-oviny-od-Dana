@@ -105,6 +105,7 @@ class Decodex():
         return self.let
 
     def SaveCodex(self, filename_codex):
+        self.filename = filename_codex
         self.codex_file = open(self.filename, "w")
         self.let_index = 0
         for i in range(len(self.let)):
@@ -139,7 +140,6 @@ class Decodex():
                 self.obj = str("")
             print("Codex read succssesful...")
             self.codex_read.close()
-            terminal.SetCodDirTo(False)
             return codex
 
     def TesCod(self):
@@ -323,8 +323,12 @@ class CommandLine():
                     terminal.Main()
                 elif self.backup_filename_save == True:
                     filename_input = str(input("Please enter filename to save codex with .txt:"))
-                    panel.SaveCodex()
-                    terminal.Main()
+                    if filename_input[-1] == "t" and filename_input[-2] == "x" and filename_input[-3] == "t" and filename_input[-4] == ".":
+                        panel.SaveCodex(filename_input)
+                        terminal.Main()
+                    else:
+                        print("That is not a valid .txt file, please try again with .txt")
+                        terminal.Main()
 
             elif self.command == self.command_list[self.client_command]:
                 safe_codex = panel.TesCod()
