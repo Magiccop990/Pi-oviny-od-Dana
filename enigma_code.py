@@ -147,7 +147,6 @@ class Decodex():
                 self.obj = self.obj.split(";")
                 self.codex[str(self.obj[0])] = str(self.obj[1])
                 self.obj = str("")
-            print("Codex read succssesful...")
             self.codex_read.close()
             return codex
 
@@ -183,6 +182,14 @@ class Decodex():
         self.setting_file = open("setting.txt", "r")
         self.setting = self.setting_file.readline().split(":")[1]
         print(self.setting)
+        self.setting_file.close()
+
+    #get nickname for that motherfucker
+    def GetNick(self):
+        self.setting_file = open("setting.txt", "r")
+        useless = self.setting_file.readline()
+        nickname = self.setting_file.readline().split(":")[1]
+        return nickname
 
     #save setting
     def SaveSetting(self):
@@ -482,11 +489,11 @@ class Online():
                     self.recieve_msg = self.recieve_msg.replace("[", "")
                     self.recieve_msg = self.recieve_msg.replace("]", "")
                     self.recieve_msg = self.recieve_msg.replace("'", "")
-                    if self.recieve_msg == self.message_for_server.decode(self.decode_format):
+                    if self.nickname in self.recieve_msg:
                         time.sleep(1)
                     elif self.recieve_msg != "[]":
                         self.recieve_msg = panel.Decode(self.recieve_msg)
-                        print(f"Friend: {self.recieve_msg}")
+                        print(f"{self.recieve_msg}")
                         time.sleep(1)
                     else:
                         time.sleep(1)
@@ -502,6 +509,9 @@ class Online():
     #start client and connect it to server
     def start(self):
         cisco.Connect()
+        self.nickname = panel.GetNick()
+        print(f"Connecting as {self.nickname}")
+        cisco.send(self.nickname)
         self.recieve_thread = threading.Thread(target=cisco.rcv)  
         self.main_thread = threading.Thread(target=cisco.main)
         cisco.send("")
@@ -528,7 +538,7 @@ class Online():
                     terminal.Main()
             else:
                 break
-                
+
 
 #def classes
 panel = Decodex()
