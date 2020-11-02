@@ -3,13 +3,14 @@ import socket, threading, time
 class Online():
     def __init__(self):
         self.frequency = 1234
-        self.FORMAT = "utf-8"
+        self.decode_format = "utf-8"
         self.DISCONNECT_MSG = "!d"
         self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
         self.IP_PORT = (self.ip, self.frequency)
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.recieve = True
         self.thread_run = True
+        self.yes = False
 
     def Connect(self):
         try:
@@ -23,25 +24,34 @@ class Online():
     def rcv(self):
         while self.recieve:
             if self.thread_run:
-                self.recieve_msg = self.client.recv(2048).decode(self.FORMAT)
-                self.recieve_msg = self.recieve_msg.replace("[", "")
-                self.recieve_msg = self.recieve_msg.replace("]", "")
-                self.recieve_msg = self.recieve_msg.replace("'", "")
-                print(f"Friend: {self.recieve_msg}")
-                time.sleep(1)
+                self.recieve_msg = self.client.recv(2048).decode(self.decode_format)
+                if len(self.recieve_msg) == 0:
+                    pass
+                else:
+                    self.recieve_msg = self.recieve_msg.replace("[", "")
+                    self.recieve_msg = self.recieve_msg.replace("]", "")
+                    self.recieve_msg = self.recieve_msg.replace("'", "")
+                    if self.recieve_msg == self.message_for_server.decode(self.decode_format):
+                        time.sleep(1)
+                    elif self.recieve_msg != "[]":
+                        print(f"Friend: {self.recieve_msg}")
+                        time.sleep(1)
+                    else:
+                        time.sleep(1)
             else:
                 break
 
-
     def send(self, msg):
-        self.message_for_server = msg.encode(self.FORMAT)
+        self.message_for_server = msg.encode(self.decode_format)
         self.client.send(self.message_for_server)
+        return self.message_for_server
 
     def start(self):
         cisco.Connect()
         self.recieve_thread = threading.Thread(target=cisco.rcv)  
         self.main_thread = threading.Thread(target=cisco.main)
         self.main_thread.start()
+        cisco.send("")
         self.recieve_thread.start()
 
     def main(self):
@@ -51,10 +61,10 @@ class Online():
                 if self.to_send == self.DISCONNECT_MSG:
                     cisco.send("!disconnect")
                     self.thread_run = False
-                    time.sleep(1)
+                    time.sleep(0.5)
                     exit()
                 else:
-                    cisco.send(self.to_send)
+                    self.message_for_server = cisco.send(self.to_send)
             else:
                 break
 
