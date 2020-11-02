@@ -1,107 +1,77 @@
 import socket, threading, time
 
-
 class Server():
     def __init__(self):
         self.frequency = 1234  #frequency
         self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
         self.name = socket.gethostname()  #pc name
-        print(self.ip + " + " + self.name)
+        print("Ip: " + self.ip + ", device: " + self.name)  #print 192.168.1.21 and DEVIDE_...
         self.IP_PORT = (self.ip, self.frequency)  #server describtiom
-        self.FORMAT = "utf-8"
-        self.DISCONNECT_MSG = "!disconnect"
+        self.decode_format = "utf-8"  #encode format
+        self.DISCONNECT_MSG = "!disconnect"  #disconnect msg
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  #socket type
         self.server.bind(self.IP_PORT)  #bind the server describtion to IP_PORT
-        self.msg_for1 = []
-        self.msg_for2 = []
-        self.connected1 = False
-        self.connected2 = False
-        self.stop = False
-        self.exit_ = True
+        self.exit_protocol = False  #if True program will close
+        self.connections = {}  #all clients that connecter to server
+        self.msg_rcv_bol = False  #to be able to watch message sending
 
-    def SendToClient1(self):
-        while True:
-            if len(self.msg_for1) != 0:
-                if self.connected1 == True:
-                    self.client1.send(str(self.msg_for1).encode(self.FORMAT))
-                    self.msg_for1 = []
-                else:
-                    time.sleep(1)
-
-    def SendToClient2(self):
-        while True:
-            if len(self.msg_for2) != 0:
-                if self.connected2 == True:
-                    self.client2.send(str(self.msg_for2).encode(self.FORMAT))
-                    self.msg_for2 = []
-                else:
-                    time.sleep(1)
-
-    def handle_client1(self):
-        while self.connected1:
-            self.msg = self.client1.recv(1024).decode(self.FORMAT)
-            self.msg_for2.append(self.msg)
-            if self.msg == self.DISCONNECT_MSG:
-                self.connected1 = False
-                print(f"{self.IP_PORT} disconnected...")
-                self.msg_for2.append("One member disconnected...")
+    #handle every client, every client will run on this code
+    def handle(self, client, client_ip):
+        print(f"Welcome {client_ip}")  #welcome on server
+        connected = True
+        while connected:
+            if self.exit_protocol:
                 break
-            print(f"{self.IP_PORT} {self.msg}")
-        self.client1.close()
+            self.msg = client.recv(1024).decode(self.decode_format)  #recieve message
+            print(f"{client_ip} {self.msg}")  #print message
+            self.msg_rcv_bol = True
+            cisco.Send()  #send message to all clients
+            if self.msg == self.DISCONNECT_MSG:  #if message == disconnect message: break
+                connected = False
+                print(f"{client_ip} disconnected...")
+                self.connections[client] = False  #TypeError: 'socket' object cannot be interpreted as an integer
+        client.close()
 
-    def handle_client2(self):
-        while self.connected2:
-            self.msg = self.client2.recv(1024).decode(self.FORMAT)
-            self.msg_for1.append(self.msg)
-            if self.msg == self.DISCONNECT_MSG:
-                self.connected2 = False
-                print(f"{self.IP_PORT} disconnected...")
-                self.msg_for1.append("One member disconnected...")
-                break
-            print(f"{self.IP_PORT} {self.msg}")
-        self.client1.close()
-
-    def Exit(self):
+    #watch if anyone send message, if not, start countdown(30 s), when finished, print "It's so dark here, everyone left..."
+    def Watcher(self):
+        num = 0
         while True:
-            if self.exit_ == True:
-                time.sleep(10)
-                if self.connected1 == False and self.connected2 == False:
-                    print("Everyone left, it's so dark here...")
-                else:
-                    pass
+            if self.exit_potocol:
+                break
+            if num == 30:
+                print("It's so dark here, everyone left...")
+                num = 0
+            elif self.msg_rcv_bol == True:
+                self.msg_rcv_bol = False
+                num = 0
+            elif self.msg_rcv_bol == False:
+                num += 1
+                time.sleep(1)
+
+    #send message to every client
+    def Send(self):
+        for conns in self.connections:
+            if self.connections[conns] == True:
+                conns.send(self.msg.encode(self.decode_format))  #send message
             else:
+                pass
+
+    #client connections accept
+    def Main(self):
+        self.server.listen(5)  #the server can hold up to 5 clients
+        watch = threading.Thread(target=cisco.Watcher)  #watcher thread
+        watch.start()  #watcher start
+        while True:
+            if self.exit_protocol:
                 break
-    
-    def client1_start(self):
-        self.client1, self.IP_PORT1 = self.server.accept()
-        print(f"New client {self.IP_PORT1}")
-        self.connected1 = True
-        self.message_send_thread1.start()
-        s.handle_client1()
+            connection, IP_PORT = self.server.accept()  #new connection accept
+            self.connections[connection] = True  #list gets connection
+            client_thread = threading.Thread(target=cisco.handle, args=(connection, IP_PORT))  #start that more time than one
+            client_thread.start()  #start that thread
 
-    def client2_start(self):
-        self.client2, self.IP_PORT2 = self.server.accept()
-        print(f"New client {self.IP_PORT2}")
-        self.connected2 = True
-        self.message_send_thread2.start()
-        s.handle_client2()
+cisco = Server()
 
-    def Threads(self):
-        self.destroy = threading.Thread(target=s.Exit)
-        self.thread1 = threading.Thread(target=s.client1_start)
-        self.thread2 = threading.Thread(target=s.client2_start)
-        self.message_send_thread1 = threading.Thread(target=s.SendToClient2)
-        self.message_send_thread2 = threading.Thread(target=s.SendToClient1)
-
-    def main(self):
-        s.Threads()
-        self.server.listen()
-        self.thread1.start()
-        self.thread2.start()
-        self.destroy.start()
-
-s = Server()
-
+#dufam ze toto vies co robi
 if __name__ == "__main__":
     print("Server is running...")
-    s.main()
+    cisco.Main()
