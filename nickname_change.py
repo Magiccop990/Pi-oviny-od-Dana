@@ -1,0 +1,8 @@
+sf = open("setting.txt", "r")
+setting = sf.readline()
+nick = sf.readline().split(":")
+nick[1].replace("\n", "")
+print(f"Your current nickname: {nick[1]}")
+nick[1] = str(input("Please enter new nickname: "))
+wf = open("setting.txt", "w")
+wf.write(setting + "\n" + nick[0] + ":" + nick[1])
