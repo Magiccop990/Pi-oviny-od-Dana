@@ -509,6 +509,8 @@ class Online():
 
     #main loop
     def main(self):
+        global panel
+        codex = panel.ReadCodex("codex.txt")
         while True:
             if self.thread_run:
                 self.to_send = str(input(""))
@@ -519,6 +521,7 @@ class Online():
                         time.sleep(0.5)
                         exit()
                     else:
+                        self.to_send = panel.Code(self.to_send)
                         self.message_for_server = cisco.send(self.to_send)
                 else:
                     terminal.Main()
@@ -530,9 +533,6 @@ class Online():
 panel = Decodex()
 terminal = CommandLine()
 cisco = Online()
-
-def StartUp():
-    panel.ReadCodex("codex.txt")
 
 #if not imported start process
 if __name__ == "__main__":
