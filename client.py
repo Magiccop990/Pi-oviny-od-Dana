@@ -2,7 +2,7 @@ import socket, threading, time
 
 class Online():
     def __init__(self):
-        self.frequency = 1234
+        self.frequency = 10000
         self.decode_format = "utf-8"
         self.DISCONNECT_MSG = "!d"
         self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
@@ -31,10 +31,10 @@ class Online():
                     self.recieve_msg = self.recieve_msg.replace("[", "")
                     self.recieve_msg = self.recieve_msg.replace("]", "")
                     self.recieve_msg = self.recieve_msg.replace("'", "")
-                    if self.recieve_msg == self.message_for_server.decode(self.decode_format):
+                    if self.nickname in self.recieve_msg:
                         time.sleep(1)
                     elif self.recieve_msg != "[]":
-                        print(f"Friend: {self.recieve_msg}")
+                        print(f"{self.recieve_msg}")
                         time.sleep(1)
                     else:
                         time.sleep(1)
@@ -48,6 +48,8 @@ class Online():
 
     def start(self):
         cisco.Connect()
+        self.nickname = str(input("Nickname: "))
+        cisco.send(self.nickname)
         self.recieve_thread = threading.Thread(target=cisco.rcv)  
         self.main_thread = threading.Thread(target=cisco.main)
         self.main_thread.start()
