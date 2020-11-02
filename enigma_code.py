@@ -485,6 +485,7 @@ class Online():
                     if self.recieve_msg == self.message_for_server.decode(self.decode_format):
                         time.sleep(1)
                     elif self.recieve_msg != "[]":
+                        self.recieve_msg = panel.Decode(self.recieve_msg)
                         print(f"Friend: {self.recieve_msg}")
                         time.sleep(1)
                     else:
