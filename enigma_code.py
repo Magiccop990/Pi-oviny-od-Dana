@@ -181,14 +181,18 @@ class Decodex():
     def ReadSetting(self):
         self.setting_file = open("setting.txt", "r")
         self.setting = self.setting_file.readline().split(":")[1]
-        print(self.setting)
+        self.setting = self.setting.replace("\n", "")
         self.setting_file.close()
 
     #get nickname for that motherfucker
     def GetNick(self):
-        self.setting_file = open("setting.txt", "r")
-        useless = self.setting_file.readline()
-        nickname = self.setting_file.readline().split(":")[1]
+        panel.ReadSetting()
+        if self.setting in ("True", True):
+            self.setting_file = open("setting.txt", "r")
+            useless = self.setting_file.readline()
+            nickname = self.setting_file.readline().split(":")[1]
+        else:
+            nickname = str(input("Please enter your nickname: "))
         return nickname
 
     #save setting
