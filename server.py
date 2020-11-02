@@ -1,11 +1,11 @@
-import socket, threading, time
+import socket, threading, time  #we need all these modules
 
+#main class
 class Server():
     def __init__(self):
-        self.frequency = 1234  #frequency
-        self.ip = "192.168.1.21"# - "95.103.201.58" / "192.168.1.21"
+        self.frequency = 10000  #frequency
+        self.ip = "0.0.0.0"# - "95.103.201.58" / "192.168.1.21"
         self.name = socket.gethostname()  #pc name
-        print("Ip: " + self.ip + ", device: " + self.name)  #print 192.168.1.21 and DEVIDE_...
         self.IP_PORT = (self.ip, self.frequency)  #server describtiom
         self.decode_format = "utf-8"  #encode format
         self.DISCONNECT_MSG = "!disconnect"  #disconnect msg
@@ -13,22 +13,25 @@ class Server():
         self.server.bind(self.IP_PORT)  #bind the server describtion to IP_PORT
         self.exit_protocol = False  #if True program will close
         self.connections = {}  #all clients that connecter to server
+        self.from_nick = ""
         self.msg_rcv_bol = False  #to be able to watch message sending
 
     #handle every client, every client will run on this code
     def handle(self, client, client_ip):
-        print(f"Welcome {client_ip}")  #welcome on server
+        nickname = client.recv(1024).decode(self.decode_format)
+        print(f"Welcome {nickname}")  #welcome on server
         connected = True
         while connected:
             if self.exit_protocol:
                 break
             self.msg = client.recv(1024).decode(self.decode_format)  #recieve message
-            print(f"{client_ip} {self.msg}")  #print message
+            self.from_nick = nickname
+            print(f"{nickname}: {self.msg}")  #print message
             self.msg_rcv_bol = True
             cisco.Send()  #send message to all clients
             if self.msg == self.DISCONNECT_MSG:  #if message == disconnect message: break
                 connected = False
-                print(f"{client_ip} disconnected...")
+                print(f"{nickname} disconnected...")
                 self.connections[client] = False  #TypeError: 'socket' object cannot be interpreted as an integer
         client.close()
 
@@ -36,7 +39,7 @@ class Server():
     def Watcher(self):
         num = 0
         while True:
-            if self.exit_potocol:
+            if self.exit_protocol:
                 break
             if num == 30:
                 print("It's so dark here, everyone left...")
@@ -52,7 +55,7 @@ class Server():
     def Send(self):
         for conns in self.connections:
             if self.connections[conns] == True:
-                conns.send(self.msg.encode(self.decode_format))  #send message
+                conns.send(self.from_nick.encode(self.decode_format) + ": ".encode(self.decode_format) + self.msg.encode(self.decode_format))  #send message
             else:
                 pass
 
