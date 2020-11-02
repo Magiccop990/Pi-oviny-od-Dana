@@ -34,10 +34,12 @@ class Decodex():
         self.safe_codex = False
         self.setting = False
 
+    #pick random num between 1 and 0 and return it
     def RandomNum(self):
         rand_num = random.choice(self.symbols)
         return rand_num
 
+    #makes codex number fe: 011010
     def Number(self):
         for i in range(6):
             rand_num = panel.RandomNum()
@@ -47,6 +49,7 @@ class Decodex():
                 panel.Number()
         return self.number
 
+    #makes whole new codex
     def NewCodex(self):
         self.let = panel.GetLet()
         self.safe_codex = True
@@ -63,6 +66,7 @@ class Decodex():
         print("Codex succssesfuly created...")
         return codex
 
+    #code some message
     def Code(self, to_code):
         self.result = to_code
         self.let_index = 0
@@ -74,6 +78,7 @@ class Decodex():
             self.number = str("")
         return self.result
 
+    #decode some message
     def Decode(self, to_decode):
         panel.GetLet()
         self.result = to_decode
@@ -86,11 +91,13 @@ class Decodex():
             self.let_index += 1
         return self.text
 
+    #get key by value insert
     def search_by_val(self, val):
         for keys in self.codex:
             if val == self.codex[keys]:
                 return keys
 
+    #read letter.txt and write those letters down son
     def GetLet(self):
         try:
             self.letters_file = open("letter.txt", "r")
@@ -104,6 +111,7 @@ class Decodex():
             self.letters_file.close()
         return self.let
 
+    #saves current codex to a file
     def SaveCodex(self, filename_codex):
         self.filename = filename_codex
         self.codex_file = open(self.filename, "w")
@@ -116,6 +124,7 @@ class Decodex():
         self.codex_file.close()
         print("Codex save succssesful...")
 
+    #reads file with codex and apply it on current one
     def ReadCodex(self, filename_codex):
         filename = filename_codex
         self.let = panel.GetLet()
@@ -142,33 +151,40 @@ class Decodex():
             self.codex_read.close()
             return codex
 
+    #return if its save to code or decode a message(if codex is definied)
     def TesCod(self):
         return self.safe_codex
 
+    #find out if someone has entered a message and if its save to decode
     def SafDec(self, value):
         if value == True:
             self.safe_decode = True
         else:
             self.safe_decode = False
 
+    #return codex
     def GetCod(self):
         return self.codex
 
+    #save to setting file, true or false
     def SetSetting(self, value):
         if value == True:
             self.setting = True
         elif value == False:
             self.setting = False
 
+    #get setting and return it
     def GetSetBol(self):
         print("Setting: " + str(self.setting))
         return self.setting
 
+    #read setting file
     def ReadSetting(self):
         self.setting_file = open("setting.txt", "r")
         self.setting = self.setting_file.readline().split(":")[1]
         print(self.setting)
 
+    #save setting
     def SaveSetting(self):
         self.setting_file = open("setting.txt", "w")
         if self.setting == False:
@@ -194,12 +210,11 @@ class CommandLine():
         self.savecodex_command = 8
         self.frequency_command = 9
         self.server_command = 10
-        self.client_command = 11
-        self.setting_command = 12
+        self.setting_command = 11
         self.command_list = ["/code", "/decode", "/newcodex", 
         "/getkey", "/getvalue", "/help", 
         "/exit", "/getcodex", "/savecodex", "/frequency", 
-        "/sent", "/setting"]
+        "/client", "/setting"]
         self.backup_filename_save = False
         
     #making variables global
@@ -207,18 +222,22 @@ class CommandLine():
         global codex, obj
         self.obj = obj
 
+    #set codex directiory to custom or normal
     def SetCodDirTo(self, value):
         if value == True:
             self.backup_filename_save = True
         elif value == False:
             self.backup_filename_save = False
 
+    #main terminal function
     def Main(self):
         global let, codex, result, obj, msg
         terminal.GetVariables()
         self.let = panel.GetLet()
         self.command = str(input(">> "))
+        #if its command
         if self.command[0] == "/":
+            #/rename can rename ANY command except some like /rename or / (shortcut for /help)
             if "/rename" in self.command:
                 self.obj = self.command.split(" ")
                 old_name = self.obj[1]
@@ -228,6 +247,7 @@ class CommandLine():
                 print(old_name + " is now called " + new_name)
                 terminal.Main()
 
+            #/code can code a message
             elif self.command_list[self.code_command] in self.command:
                 safe_codex = panel.TesCod()
                 if safe_codex == True:
@@ -245,6 +265,7 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
+            #/decode can decode a message
             elif self.command_list[self.decode_command] in self.command:
                 safe_codex = panel.TesCod()
                 if safe_codex == True:
@@ -266,10 +287,12 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
+            #/newcodex creates a new codex
             elif self.command_list[self.newcodex_command] in self.command:
                 codex = panel.NewCodex()
                 terminal.Main()
 
+            #/getkey can get key by value
             elif self.command_list[self.getkey_command] in self.command:
                 safe_codex = panel.TesCod()
                 if safe_codex == True:
@@ -291,6 +314,7 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
+            #/getvalue can get value with key
             elif self.command_list[self.getvalue_command] in self.command:
                 safe_codex = panel.TesCod()
                 if safe_codex == True:
@@ -316,6 +340,7 @@ class CommandLine():
                     print("Codex has not been definied. Please definy the codex")
                     terminal.Main()
 
+            #/help or / print full command list
             elif self.command == self.command_list[self.help_command] or self.command == "/":
                 self.text_output = str(self.command_list).replace(",", "")
                 self.text_output = self.text_output.replace("[", "")
@@ -323,14 +348,17 @@ class CommandLine():
                 print("Avaible commands: " + self.text_output)
                 terminal.Main()
 
+            #/exit can exit code
             elif self.command_list[self.exit_command] in self.command:
                 print("Closing...")
                 exit()
 
+            #/getcodex can read codex file
             elif self.command_list[self.getcodex_command] in self.command:
                 self.codex = panel.ReadCodex("codex.txt")
                 terminal.Main()
 
+            #/savecodex saves current codex to a codex.txt file
             elif self.command_list[self.savecodex_command] in self.command:
                 if self.backup_filename_save == False:
                     panel.SaveCodex("codex.txt")
@@ -344,28 +372,22 @@ class CommandLine():
                         print("That is not a valid .txt file, please try again with .txt")
                         terminal.Main()
 
-#####################################################################################################
+            #/client sets terminal directory to chat
             elif self.command == self.command_list[self.server_command]:
-                safe_codex = panel.TesCod()
-                if safe_codex == True:
-                    msg_to_code = str(input("Please enter message: "))
-                    msg_to_send = panel.Code(msg_to_code)
-                    cisco.main(msg_to_send)
-                    terminal.Main()
-                else:
-                    print("Codex has not been definied. Please definy the codex")
-                    terminal.Main()
+                pass
 
+            #sets frequency of server(not working yet)
             elif self.command_list[self.frequency_command] in self.command:
                 if self.command_list[self.frequency_command] == self.command:
                     frequency = int(input("Enter new frequency: "))
-                    print("The frequency is now: " + frequency)
+                    print("The frequency is now: " + str(frequency))
                     terminal.Main()
                 elif self.command_list[self.frequency_command] in self.command:
                     frequency = self.command.replace(self.command + " ", "")
                     print("The frequency is now: " + frequency)
                     terminal.Main()
 
+            #/setting can make setting True or False
             elif self.command_list[self.setting_command] in self.command:
                 if self.command_list[self.setting_command] == self.command:
                     panel.ReadSetting()
@@ -393,14 +415,16 @@ class CommandLine():
                         elif setting == "False":
                             print("But, the setting is already False")
                             terminal.Main()
-                    else:
-                        print("Settings dont have this attribute")
-                        terminal.Main()
+                        else:
+                            print("Settings dont have this attribute")
+                            terminal.Main()
 
+            #if there is no command like that
             else:
                 print("There is no command named " + self.command)
                 terminal.Main()
 
+        #can print some shitty stuff
         else:
             if self.command == "codex":
                 safe_codex = panel.TesCod()
@@ -424,7 +448,7 @@ class CommandLine():
 
 
 
-#local message send if server is online
+#cisco, local usage
 class Online():
     def __init__(self):
         self.frequency = 10000
@@ -437,6 +461,7 @@ class Online():
         self.thread_run = True
         self.yes = False
 
+    #connect to server
     def Connect(self):
         try:
             self.client.connect(self.IP_PORT)
@@ -446,6 +471,7 @@ class Online():
         else:
             pass
 
+    #recieve messages
     def rcv(self):
         while self.recieve:
             if self.thread_run:
@@ -456,58 +482,58 @@ class Online():
                     self.recieve_msg = self.recieve_msg.replace("[", "")
                     self.recieve_msg = self.recieve_msg.replace("]", "")
                     self.recieve_msg = self.recieve_msg.replace("'", "")
-                    safe_codex = panel.TesCod()
-                    if safe_codex == True:
-                        msg = panel.Decode(self.recieve_msg)
-                        print("Message: " + msg)
-                        if msg == self.message_for_server.decode(self.decode_format):
-                            time.sleep(1)
-                        elif msg != "":
-                            print(f"Friend: {self.recieve_msg}")
-                            time.sleep(1)
-                        else:
-                            time.sleep(1)
-                        terminal.Main()
+                    if self.recieve_msg == self.message_for_server.decode(self.decode_format):
+                        time.sleep(1)
+                    elif self.recieve_msg != "[]":
+                        print(f"Friend: {self.recieve_msg}")
+                        time.sleep(1)
                     else:
-                        print("Codex has not been definied. Please definy the codex. We can't recieve messages until codex is definied.")
-                        terminal.Main()
+                        time.sleep(1)
             else:
                 break
 
+    #send messages
     def send(self, msg):
         self.message_for_server = msg.encode(self.decode_format)
-        self.message_for_server = panel.Code(self.message_for_server)
         self.client.send(self.message_for_server)
+        return self.message_for_server
 
+    #start client and connect it to server
     def start(self):
         cisco.Connect()
         self.recieve_thread = threading.Thread(target=cisco.rcv)  
+        self.main_thread = threading.Thread(target=cisco.main)
         cisco.send("")
         self.recieve_thread.start()
+        self.main_thread.start()
 
-    def main(self, msg_to_send_to_server):
-        if self.thread_run:
-            self.to_send = msg_to_send_to_server
-            if self.to_send == self.DISCONNECT_MSG:
-                cisco.send("!disconnect")
-                self.thread_run = False
-                time.sleep(0.5)
-                exit()
+    #main loop
+    def main(self):
+        while True:
+            if self.thread_run:
+                self.to_send = str(input(""))
+                if self.to_send != "/terminal":
+                    if self.to_send == self.DISCONNECT_MSG:
+                        cisco.send("!disconnect")
+                        self.thread_run = False
+                        time.sleep(0.5)
+                        exit()
+                    else:
+                        self.message_for_server = cisco.send(self.to_send)
+                else:
+                    terminal.Main()
             else:
-                cisco.send(self.to_send)
-        else:
-            break
+                break
+                
+
+#def classes
+panel = Decodex()
+terminal = CommandLine()
+cisco = Online()
 
 def StartUp():
-    #def classes
-    panel = Decodex()
-    terminal = CommandLine()
-    cisco = Online()
     panel.ReadCodex("codex.txt")
-    cisco.start()
-    terminal.Main() 
-
 
 #if not imported start process
 if __name__ == "__main__":
-    StartUp()
+    cisco.start()
