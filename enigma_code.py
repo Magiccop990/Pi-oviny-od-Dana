@@ -63,8 +63,7 @@ class Decodex():
             self.codex[self.key] = self.number
             self.let_index += 1
             self.number = str("")
-        print("Codex succssesfuly created...")
-        return codex
+        return self.codex
 
     #code some message
     def Code(self, to_code):
@@ -174,7 +173,6 @@ class Decodex():
 
     #get setting and return it
     def GetSetBol(self):
-        print("Setting: " + str(self.setting))
         return self.setting
 
     #read setting file
@@ -184,12 +182,14 @@ class Decodex():
         self.setting = self.setting.replace("\n", "")
         self.setting_file.close()
 
-    #get nickname for that motherfucker
+    #get nickname for connection
     def GetNick(self):
         panel.ReadSetting()
         if self.setting in ("True", True):
             self.setting_file = open("setting.txt", "r")
             useless = self.setting_file.readline()
+            self.codex_setting = self.setting_file.readline().split(":")
+            self.codex_setting = self.codex_setting[1].replace("\n", "")
             nickname = self.setting_file.readline().split(":")[1]
         else:
             nickname = str(input("Please enter your nickname: "))
@@ -203,6 +203,10 @@ class Decodex():
         elif self.setting == True:
             self.setting_file.write("setting:True")
         self.setting_file.close()
+
+    #return codex setting
+    def RetCodSet(self):
+        return self.codex_setting
 
 
 
@@ -227,6 +231,7 @@ class CommandLine():
         "/exit", "/getcodex", "/savecodex", "/frequency", 
         "/client", "/setting"]
         self.backup_filename_save = False
+        self.cisco_started = False
         
     #making variables global
     def GetVariables(self):
@@ -385,7 +390,11 @@ class CommandLine():
 
             #/client sets terminal directory to chat
             elif self.command == self.command_list[self.server_command]:
-                pass
+                if self.cisco_started:
+                    pass
+                elif self.cisco_started == False:
+                    cisco.start()
+                    self.cisco_started = True
 
             #sets frequency of server(not working yet)
             elif self.command_list[self.frequency_command] in self.command:
@@ -406,6 +415,7 @@ class CommandLine():
                 elif self.command_list[self.setting_command] in self.command:
                     self.command = self.command.replace(self.command_list[self.setting_command] + " ", "")
                     setting = panel.GetSetBol()
+                    print("Setting: " + str(setting))
                     if self.command == "True" or self.command == "true" or self.command == "t":
                         print(setting)
                         if setting == "True":
@@ -478,11 +488,13 @@ class Online():
             self.client.connect(self.IP_PORT)
         except:
             print("The server isn't available...")
-            exit()
+            print("Trying to connect again in 5 secconds")
+            time.sleep(5)
+            cisco.Connect()
         else:
             pass
 
-    #recieve messages
+    #recieve messages and decodes it
     def rcv(self):
         while self.recieve:
             if self.thread_run:
@@ -512,20 +524,22 @@ class Online():
 
     #start client and connect it to server
     def start(self):
-        cisco.Connect()
         self.nickname = panel.GetNick()
-        print(f"Connecting as {self.nickname}")
+        codex_setting = panel.RetCodSet()
+        if codex_setting == "True":
+            codex = panel.ReadCodex("codex.txt")
+        elif codex_setting == "False":
+            codex = panel.NewCodex()
+        print(f"Connecting as {self.nickname}...")
+        cisco.Connect()
         cisco.send(self.nickname)
         self.recieve_thread = threading.Thread(target=cisco.rcv)  
         self.main_thread = threading.Thread(target=cisco.main)
-        cisco.send("")
         self.recieve_thread.start()
         self.main_thread.start()
 
     #main loop
     def main(self):
-        global panel
-        codex = panel.ReadCodex("codex.txt")
         while True:
             if self.thread_run:
                 self.to_send = str(input(""))
@@ -549,7 +563,9 @@ panel = Decodex()
 terminal = CommandLine()
 cisco = Online()
 
+def StartUp():
+    terminal.Main()
+
 #if not imported start process
 if __name__ == "__main__":
-    cisco.start()
-#its just a beutiful number :D 555
+    StartUp()
