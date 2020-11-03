@@ -10,7 +10,7 @@ class Online():
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.recieve = True
         self.thread_run = True
-        self.yes = False
+        self.yes = False  #lol
 
     def Connect(self):
         try:
